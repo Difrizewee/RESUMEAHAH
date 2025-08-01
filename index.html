@@ -7,7 +7,6 @@
 
   <!-- Telegram Web App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <!-- html2canvas + jsPDF -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -30,8 +29,9 @@
       --radius:14px;
       --shadow:0 30px 80px -10px rgba(15,17,26,.55);
       --accent:#6366f1;
-      --transition:.45s cubic-bezier(.25,.8,.25,1);
+      --transition:.35s cubic-bezier(.25,.8,.25,1);
       --gap:1.25rem;
+      --duration:.3s;
     }
     *{box-sizing:border-box;}
     body {
@@ -43,38 +43,32 @@
       -webkit-font-smoothing:antialiased;
       position:relative;
       padding-bottom:80px;
-      overflow-x:hidden;
+      line-height:1.3;
     }
     .app {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 1rem 1rem 4rem;
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:2rem;
-      animation:fadeInUp .8s ease-out;
-    }
-    @keyframes fadeInUp {
-      from {opacity:0; transform:translateY(12px);}
-      to {opacity:1; transform:translateY(0);}
     }
     h1 {font-size:2rem; margin:0 0 .5rem; font-weight:700; line-height:1.1;}
     h2 {font-size:1.1rem; margin:0 0 .5rem; font-weight:600; text-transform:uppercase; letter-spacing:1px;}
-    p {margin:0 0 1rem; line-height:1.5;}
+    p {margin:0 0 1rem;}
     .panel {
       background: var(--card);
       border-radius: var(--radius);
-      padding:1.5rem;
+      padding:1.5rem 1.75rem;
       position:relative;
       overflow:hidden;
       box-shadow: var(--shadow);
       display:flex;
       flex-direction:column;
       gap:1rem;
-      transform:translateY(0);
       transition: var(--transition);
     }
-    .panel:hover {filter:brightness(1.03);}
+    .flex {display:flex; gap:1rem; flex-wrap:wrap;}
     .btn {
       display:inline-flex;
       align-items:center;
@@ -88,18 +82,14 @@
       color:#fff;
       position:relative;
       overflow:hidden;
-      transition: .3s ease;
+      transition: .25s ease;
       font-size:.9rem;
     }
     .btn-secondary {
       background: rgba(255,255,255,.07);
       color: var(--text);
     }
-    .btn:not(.disabled):hover {
-      filter:brightness(1.08);
-      transform:translateY(-1px);
-    }
-    .flex {display:flex; gap:1rem; flex-wrap:wrap;}
+    .btn:hover:not(.disabled) {filter:brightness(1.08); transform:translateY(-1px);}
     .input {
       background: rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.1);
@@ -126,20 +116,6 @@
       margin-right:6px;
       margin-bottom:4px;
     }
-    .stepper {display:flex; gap:.5rem; margin-bottom:1rem; position:relative;}
-    .step-dot {
-      flex:1;
-      background: rgba(255,255,255,.08);
-      height:8px;
-      border-radius:4px;
-      position:relative;
-      overflow:hidden;
-      transition: .3s;
-    }
-    .step-dot.active {
-      background: var(--accent);
-      box-shadow:0 0 14px rgba(99,102,241,.6);
-    }
     .template-switcher {display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap;}
     .template-card {
       flex:1;
@@ -150,19 +126,19 @@
       position:relative;
       border:2px solid transparent;
       transition:.25s;
-      min-width:140px;
+      min-width:130px;
       display:flex;
       align-items:center;
       gap:12px;
       font-size:.8rem;
+      user-select:none;
     }
     .template-card.selected {
       border-color: #fff;
-      box-shadow:0 20px 60px -5px rgba(99,102,241,.5);
+      box-shadow:0 25px 70px -10px rgba(99,102,241,.6);
       background: linear-gradient(135deg,#4f46e5,#6366f1);
       color:#fff;
     }
-    .template-card .info {flex:1;}
     .section-wrapper {
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -173,30 +149,18 @@
       background: rgba(255,255,255,.01);
       transition:.3s;
     }
-    .section-wrapper:hover {box-shadow:0 20px 50px -10px rgba(99,102,241,.2);}
+    .section-wrapper:hover {box-shadow:0 20px 55px -10px rgba(99,102,241,.2);}
     .section-title {
       display:flex;
       align-items:center;
       gap:10px;
       margin-bottom:6px;
       font-weight:600;
-      font-size:.9rem;
+      font-size:.85rem;
       text-transform:uppercase;
       letter-spacing:1px;
     }
-    .line {width:38px; height:4px; background: var(--accent); border-radius:3px;}
-    .skill-badge {
-      display:inline-block;
-      background:#eef2f7;
-      color:#444;
-      padding:6px 14px;
-      border-radius:999px;
-      font-size:.65rem;
-      margin:2px 4px 4px 0;
-      position:relative;
-      cursor:default;
-      user-select:none;
-    }
+    .line {width:38px; height:4px; background: var(--accent); border-radius:3px; flex-shrink:0;}
     .small-btn {
       background: rgba(255,255,255,.06);
       border:none;
@@ -215,27 +179,38 @@
       background:rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.07);
       border-radius:14px;
-      padding:12px;
-      position:relative;
+      padding:16px;
+      position:sticky;
+      top:16px;
       overflow:auto;
       min-height:720px;
+      max-height:calc(100vh - 32px);
     }
     .resume {
       background:#fff;
       color:#1e2432;
       border-radius:10px;
       padding:28px 32px;
-      max-width:800px;
+      width:800px;
       margin:auto;
       position:relative;
       overflow:hidden;
-      transform:scale(1);
-      transition:.3s;
-      opacity:0;
       font-size:14px;
+      line-height:1.3;
+      box-shadow:0 40px 90px -20px rgba(0,0,0,.08);
+      display:flex;
+      flex-direction:column;
     }
-    @keyframes appear {to {opacity:1;}}
-    .resume {animation:appear .5s forwards;}
+    .resume * {box-sizing:border-box;}
+    .resume .photo {
+      width:100px;
+      height:100px;
+      border-radius:50%;
+      object-fit:cover;
+      border:3px solid var(--accent);
+      margin-right:14px;
+      flex-shrink:0;
+    }
     .resume-header {
       display:flex;
       justify-content:space-between;
@@ -244,7 +219,7 @@
     }
     .name-block h1 {
       margin:0;
-      font-size:1.9rem;
+      font-size:2rem;
       line-height:1.1;
       font-weight:700;
     }
@@ -262,7 +237,16 @@
     }
     .muted {color:#777;}
     .item {margin-bottom:14px;}
-    a {color:#3f51b5;text-decoration:none;}
+    a {color:inherit; text-decoration:underline;}
+    .skill-badge {
+      display:inline-block;
+      background:#eef2f7;
+      color:#444;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:.65rem;
+      margin:2px 4px 4px 0;
+    }
     .template-label {
       background: #eef2f7;
       padding:4px 14px;
@@ -273,38 +257,39 @@
       margin-right:6px;
     }
 
-    /* ===== шаблоны ===== */
-    /* Classic: двухколоночный с сайдбаром */
+    /* шаблоны */
+    /* Classic: боковая панель */
     .tpl-classic .resume {
       display:grid;
-      grid-template-columns:1fr 2fr;
-      gap:24px;
-      position:relative;
-      padding:24px 28px;
+      grid-template-columns:220px 1fr;
+      gap:30px;
+      padding:24px 32px;
     }
-    .tpl-classic .resume-header {grid-column:1/-1; display:none;}
     .tpl-classic .sidebar {
       background: var(--accent);
       color:#fff;
-      padding:20px 16px;
-      border-radius:8px;
+      padding:20px 18px;
+      border-radius:10px;
       display:flex;
       flex-direction:column;
       gap:14px;
+      position:relative;
     }
-    .tpl-classic .sidebar .section-title {color:rgba(255,255,255,.85); margin-top:8px;}
-    .tpl-classic .main-content {padding:0;}
+    .tpl-classic .sidebar .section-title {margin:0; font-size:.75rem; text-transform:uppercase; letter-spacing:1px;}
+    .tpl-classic .sidebar h2 {margin:0;}
+    .tpl-classic .main-content {display:flex; flex-direction:column; gap:16px;}
     .tpl-classic .section-title .line {background:#fff;}
-    .tpl-classic h1 {margin:0; font-size:1.8rem; color:#fff;}
+    .tpl-classic h1 {font-size:1.8rem; margin:0; color:#fff;}
     .tpl-classic .title {color:rgba(255,255,255,.9);}
     .tpl-classic .contact {display:none;}
+    .tpl-classic .skill-badge {background:rgba(255,255,255,.2); color:#fff;}
 
-    /* Modern: верхняя цветная полоса */
+    /* Modern: верхняя полоса акцента */
     .tpl-modern .resume {
       position:relative;
-      padding-top:14px;
-      border:1px solid rgba(99,102,241,.4);
-      border-radius:10px;
+      padding-top:18px;
+      border:2px solid var(--accent);
+      border-radius:12px;
     }
     .tpl-modern .resume::before {
       content:'';
@@ -312,30 +297,81 @@
       top:0;
       left:0;
       right:0;
-      height:8px;
+      height:10px;
       background: var(--accent);
-      border-radius:4px 4px 0 0;
+      border-radius:6px 6px 0 0;
     }
     .tpl-modern .section-title .line {background: var(--accent);}
-    .tpl-modern .name-block h1 {font-size:2rem;}
+    .tpl-modern .name-block h1 {font-size:2.1rem;}
     .tpl-modern .title {font-size:.95rem;}
 
-    /* Elegant: светлый, serif */
+    /* Elegant: serif, светлый */
     .tpl-elegant .resume {
       font-family:'Merriweather',serif;
       background:#f9f8f6;
-      padding:32px 34px;
+      padding:34px 36px;
       color:#2e2e34;
+      border:1px solid #e7e5e2;
     }
     .tpl-elegant h1 {
       font-family:'Merriweather',serif;
-      font-size:2.1rem;
+      font-size:2.2rem;
       margin:0;
     }
     .tpl-elegant .title {color:#555; margin-top:4px; font-weight:500;}
     .tpl-elegant .section-title .line {background:#444;}
     .tpl-elegant .contact {color:#555;}
     .tpl-elegant .skill-badge {background:#e6e2dd; color:#3f3f46;}
+
+    /* Creative Dark */
+    .tpl-creative-dark .resume {
+      background:#0f1025;
+      color:#f0f2fa;
+      padding:30px 32px;
+      border-radius:14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .tpl-creative-dark .resume::after {
+      content:'';
+      position:absolute;
+      bottom:0;
+      right:0;
+      width:160px;
+      height:160px;
+      background:rgba(255,255,255,.03);
+      border-radius:50%;
+      filter:blur(40px);
+    }
+    .tpl-creative-dark h1 {color:#fff;}
+    .tpl-creative-dark .title {color:#d1d5fa;}
+    .tpl-creative-dark .section-title .line {background: var(--accent);}
+    .tpl-creative-dark .skill-badge {background:rgba(255,255,255,.1); color:#fff;}
+
+    /* Creative Light */
+    .tpl-creative-light .resume {
+      background:#fdfdfd;
+      color:#1f2235;
+      padding:30px 32px;
+      border-radius:14px;
+      position:relative;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    .tpl-creative-light .resume::after {
+      content:'';
+      position:absolute;
+      top:10px;
+      left:10px;
+      width:120px;
+      height:120px;
+      border:3px dashed var(--accent);
+      border-radius:50%;
+      opacity:.15;
+    }
+    .tpl-creative-light h1 {color: var(--accent);}
+    .tpl-creative-light .title {color:#555;}
+    .tpl-creative-light .section-title .line {background: var(--accent);}
+    .tpl-creative-light .skill-badge {background:#eef0f5; color:#444;}
 
     .notification {
       position:fixed;
@@ -355,11 +391,7 @@
       pointer-events:none;
       transition:.3s;
     }
-    .notification.show {
-      opacity:1;
-      pointer-events:auto;
-    }
-
+    .notification.show {opacity:1; pointer-events:auto;}
     .theme-toggle {
       background: rgba(255,255,255,.07);
       border:none;
@@ -377,9 +409,10 @@
     .theme-toggle:hover {background: rgba(255,255,255,.12);}
 
     /* Responsive */
-    @media (max-width:1150px){
+    @media (max-width:1250px){
       .app{grid-template-columns:1fr;}
-      .resume{transform:scale(.95);}
+      .preview-wrapper{position:relative; top:auto; max-height:none;}
+      .resume{width:100%;}
     }
   </style>
 </head>
@@ -387,12 +420,12 @@
   <div id="notif" class="notification" aria-live="polite"></div>
 
   <div class="app">
-    <!-- Редактор -->
+    <!-- Левый редактор -->
     <div class="panel" aria-label="Редактор резюме">
-      <div style="display:flex; gap:10px; align-items:center;">
-        <div style="flex:1;">
-          <h1>Резюме</h1>
-          <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:.8rem;">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:220px;">
+          <h1 style="margin-bottom:4px;">Резюме</h1>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; font-size:.75rem;">
             <div class="pill">Telegram-ready</div>
             <div class="pill">PDF export</div>
             <div class="pill">LocalStorage</div>
@@ -401,131 +434,153 @@
         <button class="theme-toggle" id="telegram-ready" title="Telegram WebApp">📦 Telegram</button>
       </div>
 
-      <div class="stepper" aria-label="Прогресс">
-        <div class="step-dot" data-step-index="0"></div>
-        <div class="step-dot" data-step-index="1"></div>
-        <div class="step-dot" data-step-index="2"></div>
-        <div class="step-dot" data-step-index="3"></div>
-        <div class="step-dot" data-step-index="4"></div>
+      <!-- Прогресс -->
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1; min-width:180px;">
+          <div style="display:flex; gap:6px; align-items:center;">
+            <div class="line" style="width:60px; margin-right:8px;"></div>
+            <div style="font-size:.75rem;">Заполнено</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <div class="step-dot" data-step-index="0" style="width:60px;"></div>
+          <div class="step-dot" data-step-index="1" style="width:60px;"></div>
+          <div class="step-dot" data-step-index="2" style="width:60px;"></div>
+          <div class="step-dot" data-step-index="3" style="width:60px;"></div>
+          <div class="step-dot" data-step-index="4" style="width:60px;"></div>
+        </div>
       </div>
 
-      <!-- Шаблоны и цвет -->
+      <!-- Шаблоны + accent -->
       <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start;">
-        <div style="flex:1; min-width:260px;">
+        <div style="flex:1; min-width:320px;">
           <div class="template-switcher" aria-label="Выбор шаблона">
             <div class="template-card selected" data-template="classic">
-              <div class="info">
-                <strong>Classic</strong><div style="font-size:.65rem;">Боковая панель, контраст</div>
-              </div>
+              <div class="info"><strong>Classic</strong><div style="font-size:.6rem;">Боковая панель</div></div>
             </div>
             <div class="template-card" data-template="modern">
-              <div class="info">
-                <strong>Modern</strong><div style="font-size:.65rem;">Верхняя цветная полоса</div>
-              </div>
+              <div class="info"><strong>Modern</strong><div style="font-size:.6rem;">Верхняя полоса</div></div>
             </div>
             <div class="template-card" data-template="elegant">
-              <div class="info">
-                <strong>Elegant</strong><div style="font-size:.65rem;">Типографика, светлый</div>
-              </div>
+              <div class="info"><strong>Elegant</strong><div style="font-size:.6rem;">Серый serif</div></div>
+            </div>
+            <div class="template-card" data-template="creative-dark">
+              <div class="info"><strong>Creative Dark</strong><div style="font-size:.6rem;">Арт-фон</div></div>
+            </div>
+            <div class="template-card" data-template="creative-light">
+              <div class="info"><strong>Creative Light</strong><div style="font-size:.6rem;">Пастель</div></div>
             </div>
           </div>
         </div>
         <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
           <div style="display:flex; gap:8px; align-items:center;">
             <div class="section-title" style="margin:0;">
-              <div class="line" style="margin-right:6px;"></div><div style="font-size:.8rem;">Цвет акцента</div>
+              <div class="line" style="margin-right:6px;"></div><div style="font-size:.75rem;">Цвет акцента</div>
             </div>
             <input type="color" id="accent-picker" value="#6366f1" style="border:none; padding:0; width:36px; height:36px; border-radius:6px; cursor:pointer;" />
           </div>
-          <div style="font-size:.75rem; color:rgba(255,255,255,.75);">Выбран: <span id="current-template">Classic</span></div>
+          <div style="font-size:.75rem; color:rgba(255,255,255,.75);">Шаблон: <strong id="template-display">Classic</strong></div>
         </div>
       </div>
 
-      <!-- Форма -->
-      <div id="form-area">
-        <div class="section-wrapper" data-step="0">
-          <div class="section-title">
-            <div class="line"></div><div>Профиль</div>
+      <!-- Профиль -->
+      <div class="section-wrapper" data-step="0">
+        <div class="section-title">
+          <div class="line"></div><div>Профиль</div>
+        </div>
+        <div class="flex" style="gap:16px;">
+          <div style="flex:2; min-width:200px;">
+            <div class="flex" style="gap:14px; flex-wrap:wrap;">
+              <div style="flex:1; min-width:140px;">
+                <small>Имя и фамилия</small>
+                <input class="input" type="text" id="fullName" placeholder="Иван Иванов" />
+              </div>
+              <div style="flex:1; min-width:140px;">
+                <small>Должность</small>
+                <input class="input" type="text" id="title" placeholder="Frontend разработчик" />
+              </div>
+            </div>
+            <div class="flex" style="gap:14px; flex-wrap:wrap;">
+              <div style="flex:1; min-width:140px;">
+                <small>Email</small>
+                <input class="input" type="email" id="email" placeholder="ivan@example.com" />
+              </div>
+              <div style="flex:1; min-width:140px;">
+                <small>Телефон</small>
+                <input class="input" type="text" id="phone" placeholder="+7 912 345-67-89" />
+              </div>
+            </div>
           </div>
-          <div class="flex">
-            <div style="flex:1;">
-              <small>Имя и фамилия</small>
-              <input class="input" type="text" id="fullName" placeholder="Иван Иванов" />
-            </div>
-            <div style="flex:1;">
-              <small>Должность</small>
-              <input class="input" type="text" id="title" placeholder="Frontend разработчик" />
-            </div>
-          </div>
-          <div class="flex">
-            <div style="flex:1;">
-              <small>Email</small>
-              <input class="input" type="email" id="email" placeholder="ivan@example.com" />
-            </div>
-            <div style="flex:1;">
-              <small>Телефон</small>
-              <input class="input" type="text" id="phone" placeholder="+7 912 345-67-89" />
+          <div style="flex:1; min-width:140px;">
+            <small>Фото</small>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="position:relative; width:100px; height:100px;">
+                <img id="photo-preview" src="" alt="Фото" style="width:100%; height:100%; object-fit:cover; border-radius:50%; border:2px solid var(--accent); background:rgba(255,255,255,.05);" />
+              </div>
+              <div style="flex:1;">
+                <input type="file" id="photo-input" accept="image/*" style="width:100%;" />
+                <div style="font-size:.6rem; margin-top:4px;">Макс 2MB</div>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="section-wrapper" data-step="1">
-          <div class="section-title">
-            <div class="line"></div><div>О себе</div>
-          </div>
-          <textarea
-            class="input"
-            id="summary"
-            rows="4"
-            placeholder="Опытный разработчик, создаю интерфейсы с вниманием к производительности и дизайну."
-          ></textarea>
+      <!-- О себе -->
+      <div class="section-wrapper" data-step="1">
+        <div class="section-title">
+          <div class="line"></div><div>О себе</div>
+        </div>
+        <textarea class="input" id="summary" rows="3" placeholder="Краткое описание себя..."></textarea>
+      </div>
+
+      <!-- Опыт -->
+      <div class="section-wrapper" data-step="2">
+        <div class="section-title">
+          <div class="line"></div><div>Опыт работы</div>
+        </div>
+        <div id="experience-list"></div>
+        <div style="margin-top:6px;">
+          <button class="small-btn" id="add-experience">+ Добавить опыт</button>
+        </div>
+      </div>
+
+      <!-- Образование и навыки -->
+      <div class="section-wrapper" data-step="3">
+        <div class="section-title">
+          <div class="line"></div><div>Образование</div>
+        </div>
+        <div id="education-list"></div>
+        <div style="margin-top:6px;">
+          <button class="small-btn" id="add-education">+ Добавить образование</button>
         </div>
 
-        <div class="section-wrapper" data-step="2">
+        <div style="margin-top:18px;">
           <div class="section-title">
-            <div class="line"></div><div>Опыт работы</div>
+            <div class="line"></div><div>Навыки</div>
           </div>
-          <div id="experience-list"></div>
-          <div class="section-actions">
-            <button class="small-btn" id="add-experience">+ Добавить опыт</button>
+          <div id="skills-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+          <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
+            <input class="input" id="new-skill" placeholder="JavaScript" style="flex:1; min-width:140px;" />
+            <button class="small-btn" id="add-skill">Добавить</button>
           </div>
         </div>
+      </div>
 
-        <div class="section-wrapper" data-step="3">
-          <div class="section-title">
-            <div class="line"></div><div>Образование</div>
-          </div>
-          <div id="education-list"></div>
-          <div class="section-actions">
-            <button class="small-btn" id="add-education">+ Добавить образование</button>
-          </div>
-
-          <div style="margin-top:1.5rem;">
-            <div class="section-title">
-              <div class="line"></div><div>Навыки</div>
-            </div>
-            <div id="skills-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
-            <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
-              <input class="input" style="flex:1; min-width:140px;" id="new-skill" placeholder="Например: JavaScript" />
-              <button class="small-btn" id="add-skill">Добавить</button>
-            </div>
-          </div>
+      <!-- Проекты -->
+      <div class="section-wrapper" data-step="4">
+        <div class="section-title">
+          <div class="line"></div><div>Проекты</div>
         </div>
-
-        <div class="section-wrapper" data-step="4">
-          <div class="section-title">
-            <div class="line"></div><div>Проекты</div>
-          </div>
-          <div id="projects-list"></div>
-          <div class="section-actions">
-            <button class="small-btn" id="add-project">+ Добавить проект</button>
-          </div>
+        <div id="projects-list"></div>
+        <div style="margin-top:6px;">
+          <button class="small-btn" id="add-project">+ Добавить проект</button>
         </div>
       </div>
 
       <!-- Управление -->
-      <div style="margin-top:12px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
-        <div style="flex:1; min-width:220px; display:flex; gap:8px; flex-wrap:wrap;">
+      <div style="margin-top:8px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="btn" id="save-btn">Сохранить</button>
           <button class="btn btn-secondary" id="load-btn">Загрузить</button>
           <button class="btn btn-secondary" id="reset-btn">Сбросить</button>
@@ -536,20 +591,20 @@
         </div>
       </div>
 
-      <div style="margin-top:8px; font-size:.75rem; color:rgba(255,255,255,.7);">
-        Всё хранится локально. Можно отправить структуру резюме через Telegram WebApp API.
+      <div style="margin-top:6px; font-size:.65rem; color:rgba(255,255,255,.7);">
+        Данные сохраняются в браузере. Можно отправить JSON в Telegram через WebApp.
       </div>
     </div>
 
-    <!-- Превью -->
+    <!-- Правая панель: превью (sticky) -->
     <div class="panel" aria-label="Превью">
-      <div style="display:flex; gap:10px; align-items:center; margin-bottom:6px;">
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
         <div style="flex:1;">
-          <h2>Превью</h2>
+          <h2 style="margin:0;">Превью</h2>
           <div style="font-size:.75rem; color: var(--muted);">Живое отображение</div>
         </div>
         <div>
-          <div class="pill">Шаблон: <span id="template-display">Classic</span></div>
+          <div class="pill">Шаблон: <strong id="template-badge">Classic</strong></div>
         </div>
       </div>
       <div class="preview-wrapper" id="preview-container">
@@ -559,16 +614,29 @@
   </div>
 
   <script>
-    // ======== УТИЛИТЫ ========
+    // ====== УТИЛИТЫ ======
     function uuid() {
       return crypto.randomUUID?.() || Math.random().toString(36).substring(2,9);
     }
-    function showNotification(msg, duration = 1700) {
+    function showNotification(msg, duration = 1600) {
       const n = document.getElementById('notif');
       n.textContent = msg;
       n.classList.add('show');
-      setTimeout(()=> n.classList.remove('show'), duration);
+      setTimeout(() => n.classList.remove('show'), duration);
     }
+    function debounce(func, wait) {
+      let t;
+      return (...args) => {
+        clearTimeout(t);
+        t = setTimeout(() => func(...args), wait);
+      };
+    }
+    function escapeHtml(str) {
+      return String(str||'').replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      })[m]);
+    }
+
     function getData() {
       const d = localStorage.getItem('resume_builder_data');
       if (!d) return defaultData();
@@ -580,6 +648,7 @@
     function defaultData() {
       return {
         profile: { fullName:'', title:'', email:'', phone:'' },
+        photo: '',
         summary: '',
         experience: [],
         education: [],
@@ -589,25 +658,8 @@
         accent: '#6366f1'
       };
     }
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, function(m){ return ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-      })[m]; });
-    }
 
-    // ======== TELEGRAM WebApp ========
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      const tgBtn = document.getElementById('telegram-ready');
-      tgBtn.textContent = 'Telegram ✔';
-      tgBtn.addEventListener('click', () => {
-        const data = state;
-        window.Telegram.WebApp.sendData(JSON.stringify({ resume: data }));
-        showNotification('Резюме отправлено в бота');
-      });
-    }
-
-    // ======== STATE ========
+    // ====== STATE ======
     let state = getData();
 
     // Элементы
@@ -622,20 +674,22 @@
     const projectsListEl = document.getElementById('projects-list');
     const resumeRenderEl = document.getElementById('resume-render');
     const templateDisplay = document.getElementById('template-display');
+    const templateBadge = document.getElementById('template-badge');
     const accentPicker = document.getElementById('accent-picker');
+    const photoInput = document.getElementById('photo-input');
+    const photoPreview = document.getElementById('photo-preview');
 
-    // ======== ИНИЦИАЛИЗАЦИЯ ========
+    // ====== INIT ======
     function init() {
-      if (state.accent) {
-        document.documentElement.style.setProperty('--accent', state.accent);
-      }
+      // restore accent
+      if (state.accent) document.documentElement.style.setProperty('--accent', state.accent);
       accentPicker.value = state.accent || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
       loadForm();
-      renderDynamic();
-      renderPreview();
+      renderDynamicSections();
+      schedulePreviewUpdate();
       bindEvents();
-      updateStepper();
       applyTemplateSelection();
+      updateStepper();
     }
 
     function loadForm() {
@@ -644,81 +698,101 @@
       emailEl.value = state.profile.email;
       phoneEl.value = state.profile.phone;
       summaryEl.value = state.summary;
-      templateDisplay.textContent = templateName(state.template);
+      templateDisplay.textContent = niceTemplateName(state.template);
+      templateBadge.textContent = niceTemplateName(state.template);
+      if (state.photo) {
+        photoPreview.src = state.photo;
+      } else {
+        photoPreview.src = '';
+        photoPreview.style.background = 'rgba(255,255,255,.05)';
+      }
     }
 
+    // ====== EVENTS ======
     function bindEvents() {
-      [fullNameEl,titleEl,emailEl,phoneEl].forEach(el => {
-        el.addEventListener('input', () => {
-          state.profile.fullName = fullNameEl.value;
-          state.profile.title = titleEl.value;
-          state.profile.email = emailEl.value;
-          state.profile.phone = phoneEl.value;
-          persist(); renderPreview(); updateStepper();
-        });
-      });
-      summaryEl.addEventListener('input', () => {
+      const syncProfile = debounce(() => {
+        state.profile.fullName = fullNameEl.value;
+        state.profile.title = titleEl.value;
+        state.profile.email = emailEl.value;
+        state.profile.phone = phoneEl.value;
+        persist();
+        schedulePreviewUpdate();
+        updateStepper();
+      }, 250);
+      [fullNameEl, titleEl, emailEl, phoneEl].forEach(el => el.addEventListener('input', syncProfile));
+      summaryEl.addEventListener('input', debounce(() => {
         state.summary = summaryEl.value;
-        persist(); renderPreview(); updateStepper();
-      });
+        persist();
+        schedulePreviewUpdate();
+        updateStepper();
+      }, 300));
 
       document.getElementById('add-experience').addEventListener('click', () => {
         state.experience.push({ id: uuid(), company:'', position:'', start:'', end:'', description:'' });
-        persist(); renderDynamic(); renderPreview(); updateStepper();
+        persist();
+        renderDynamicSections();
+        schedulePreviewUpdate();
+        updateStepper();
         showNotification('Добавлен опыт');
       });
-
       document.getElementById('add-education').addEventListener('click', () => {
         state.education.push({ id: uuid(), school:'', degree:'', start:'', end:'', extra:'' });
-        persist(); renderDynamic(); renderPreview(); updateStepper();
+        persist();
+        renderDynamicSections();
+        schedulePreviewUpdate();
+        updateStepper();
         showNotification('Добавлено образование');
       });
-
       document.getElementById('add-skill').addEventListener('click', () => {
         const v = document.getElementById('new-skill').value.trim();
         if (v) {
           if (!state.skills.includes(v)) {
             state.skills.push(v);
-            persist(); renderDynamic(); renderPreview(); updateStepper();
+            persist();
+            renderDynamicSections();
+            schedulePreviewUpdate();
+            updateStepper();
             showNotification('Навык добавлен');
           } else showNotification('Уже есть');
           document.getElementById('new-skill').value='';
         }
       });
-
       document.getElementById('add-project').addEventListener('click', () => {
         state.projects.push({ id: uuid(), name:'', description:'', link:'' });
-        persist(); renderDynamic(); renderPreview(); updateStepper();
+        persist();
+        renderDynamicSections();
+        schedulePreviewUpdate();
+        updateStepper();
         showNotification('Добавлен проект');
       });
 
       document.getElementById('save-btn').addEventListener('click', () => {
-        persist(); showNotification('Сохранено');
+        persist();
+        showNotification('Сохранено');
       });
-
       document.getElementById('load-btn').addEventListener('click', () => {
         state = getData();
         if (state.accent) document.documentElement.style.setProperty('--accent', state.accent);
-        loadForm(); renderDynamic(); renderPreview(); updateStepper(); applyTemplateSelection();
+        loadForm();
+        renderDynamicSections();
+        schedulePreviewUpdate();
+        applyTemplateSelection();
+        updateStepper();
         showNotification('Загружено');
       });
-
       document.getElementById('reset-btn').addEventListener('click', () => {
-        if (confirm('Очистить всё?')) {
-          state = defaultData();
-          persist();
-          document.documentElement.style.setProperty('--accent', state.accent);
-          accentPicker.value = state.accent;
-          loadForm(); renderDynamic(); renderPreview(); updateStepper(); applyTemplateSelection();
-          showNotification('Сброшено');
-        }
+        if (!confirm('Очистить всё?')) return;
+        state = defaultData();
+        persist();
+        document.documentElement.style.setProperty('--accent', state.accent);
+        accentPicker.value = state.accent;
+        loadForm();
+        renderDynamicSections();
+        schedulePreviewUpdate();
+        applyTemplateSelection();
+        updateStepper();
+        showNotification('Сброшено');
       });
-
-      document.getElementById('preview-btn').addEventListener('click', () => {
-        renderPreview(true);
-      });
-
-      document.getElementById('export-pdf-btn').addEventListener('click', exportPDF);
 
       document.querySelectorAll('.template-card').forEach(c => {
         c.addEventListener('click', () => {
@@ -726,9 +800,10 @@
           state.template = tpl;
           persist();
           applyTemplateSelection();
-          renderPreview();
-          templateDisplay.textContent = templateName(tpl);
-          showNotification('Шаблон: ' + templateName(tpl));
+          schedulePreviewUpdate();
+          templateDisplay.textContent = niceTemplateName(tpl);
+          templateBadge.textContent = niceTemplateName(tpl);
+          showNotification('Шаблон: ' + niceTemplateName(tpl));
         });
       });
 
@@ -737,16 +812,52 @@
         document.documentElement.style.setProperty('--accent', c);
         state.accent = c;
         persist();
-        renderPreview();
+        schedulePreviewUpdate();
       });
 
-      // Реактивно обновлять прогресс
-      setInterval(updateStepper, 800);
+      photoInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+          showNotification('Файл слишком большой');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.photo = reader.result;
+          photoPreview.src = reader.result;
+          persist();
+          schedulePreviewUpdate();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      document.getElementById('preview-btn').addEventListener('click', () => {
+        schedulePreviewUpdate(true);
+      });
+      document.getElementById('export-pdf-btn').addEventListener('click', exportPDF);
+
+      // Telegram
+      if (window.Telegram?.WebApp) {
+        window.Telegram.WebApp.ready();
+        const tbtn = document.getElementById('telegram-ready');
+        tbtn.textContent = 'Telegram ✔';
+        tbtn.addEventListener('click', () => {
+          window.Telegram.WebApp.sendData(JSON.stringify({ resume: state }));
+          showNotification('Отправлено в бота');
+        });
+      }
     }
 
-    function templateName(k) {
-      if (k === 'modern') return 'Modern';
-      if (k === 'elegant') return 'Elegant';
+    function persist() {
+      saveData(state);
+    }
+
+    function niceTemplateName(key) {
+      if (key === 'modern') return 'Modern';
+      if (key === 'elegant') return 'Elegant';
+      if (key === 'creative-dark') return 'Creative Dark';
+      if (key === 'creative-light') return 'Creative Light';
       return 'Classic';
     }
 
@@ -756,12 +867,8 @@
       });
     }
 
-    function persist() {
-      saveData(state);
-    }
-
-    // ======== ДИНАМИЧЕСКИЕ СЕКЦИИ ========
-    function renderDynamic() {
+    // ====== ДИНАМИЧЕСКИЕ СЕКЦИИ ======
+    function renderDynamicSections() {
       // Опыт
       experienceListEl.innerHTML = '';
       state.experience.forEach(exp => {
@@ -771,21 +878,19 @@
         wrapper.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="section-title"><div class="line"></div><div>Опыт</div></div>
-            <div style="display:flex; gap:6px;">
-              <button class="small-btn remove-exp">Удалить</button>
-            </div>
+            <div><button class="small-btn remove-exp">Удалить</button></div>
           </div>
-          <div class="flex" style="gap:10px; flex-wrap:wrap;">
-            <div style="flex:1; min-width:130px;">
+          <div class="flex" style="gap:12px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:120px;">
               <small>Компания</small>
               <input class="input exp-company" value="${escapeHtml(exp.company)}" placeholder="Acme Corp" />
             </div>
-            <div style="flex:1; min-width:130px;">
+            <div style="flex:1; min-width:120px;">
               <small>Должность</small>
               <input class="input exp-position" value="${escapeHtml(exp.position)}" placeholder="Frontend dev" />
             </div>
           </div>
-          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+          <div class="flex" style="gap:12px; flex-wrap:wrap; margin-top:6px;">
             <div style="flex:1; min-width:120px;">
               <small>С</small>
               <input class="input exp-start" type="month" value="${exp.start}" />
@@ -795,31 +900,30 @@
               <input class="input exp-end" type="month" value="${exp.end}" />
             </div>
           </div>
-          <div>
+          <div style="margin-top:6px;">
             <small>Описание</small>
             <textarea class="input exp-desc" rows="2" placeholder="Что делали...">${escapeHtml(exp.description)}</textarea>
           </div>
         `;
         experienceListEl.appendChild(wrapper);
-
         wrapper.querySelector('.exp-company').addEventListener('input', e => {
-          exp.company = e.target.value; persist(); renderPreview(); updateStepper();
+          exp.company = e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.exp-position').addEventListener('input', e => {
-          exp.position = e.target.value; persist(); renderPreview(); updateStepper();
+          exp.position = e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.exp-start').addEventListener('input', e => {
-          exp.start = e.target.value; persist(); renderPreview(); updateStepper();
+          exp.start = e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.exp-end').addEventListener('input', e => {
-          exp.end = e.target.value; persist(); renderPreview(); updateStepper();
+          exp.end = e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.exp-desc').addEventListener('input', e => {
-          exp.description = e.target.value; persist(); renderPreview(); updateStepper();
+          exp.description = e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.remove-exp').addEventListener('click', () => {
-          state.experience = state.experience.filter(x => x.id !== exp.id);
-          persist(); renderDynamic(); renderPreview(); updateStepper();
+          state.experience = state.experience.filter(x=>x.id!==exp.id);
+          persist(); renderDynamicSections(); schedulePreviewUpdate(); updateStepper();
           showNotification('Опыт удалён');
         });
       });
@@ -833,11 +937,9 @@
         wrapper.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="section-title"><div class="line"></div><div>Образование</div></div>
-            <div style="display:flex; gap:6px;">
-              <button class="small-btn remove-edu">Удалить</button>
-            </div>
+            <div><button class="small-btn remove-edu">Удалить</button></div>
           </div>
-          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+          <div class="flex" style="gap:12px; flex-wrap:wrap;">
             <div style="flex:1; min-width:140px;">
               <small>Учебное заведение</small>
               <input class="input edu-school" value="${escapeHtml(ed.school)}" placeholder="Университет" />
@@ -847,7 +949,7 @@
               <input class="input edu-degree" value="${escapeHtml(ed.degree)}" placeholder="Бакалавр" />
             </div>
           </div>
-          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+          <div class="flex" style="gap:12px; flex-wrap:wrap; margin-top:6px;">
             <div style="flex:1; min-width:120px;">
               <small>С</small>
               <input class="input edu-start" type="month" value="${ed.start}" />
@@ -857,31 +959,30 @@
               <input class="input edu-end" type="month" value="${ed.end}" />
             </div>
           </div>
-          <div>
+          <div style="margin-top:6px;">
             <small>Дополнительно</small>
-            <input class="input edu-extra" value="${escapeHtml(ed.extra)}" placeholder="GPA, стипендия и т.п." />
+            <input class="input edu-extra" value="${escapeHtml(ed.extra)}" placeholder="GPA и т.п." />
           </div>
         `;
         educationListEl.appendChild(wrapper);
-
         wrapper.querySelector('.edu-school').addEventListener('input', e => {
-          ed.school = e.target.value; persist(); renderPreview(); updateStepper();
+          ed.school=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.edu-degree').addEventListener('input', e => {
-          ed.degree = e.target.value; persist(); renderPreview(); updateStepper();
+          ed.degree=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.edu-start').addEventListener('input', e => {
-          ed.start = e.target.value; persist(); renderPreview(); updateStepper();
+          ed.start=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.edu-end').addEventListener('input', e => {
-          ed.end = e.target.value; persist(); renderPreview(); updateStepper();
+          ed.end=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.edu-extra').addEventListener('input', e => {
-          ed.extra = e.target.value; persist(); renderPreview(); updateStepper();
+          ed.extra=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.remove-edu').addEventListener('click', () => {
-          state.education = state.education.filter(x => x.id !== ed.id);
-          persist(); renderDynamic(); renderPreview(); updateStepper();
+          state.education = state.education.filter(x=>x.id!==ed.id);
+          persist(); renderDynamicSections(); schedulePreviewUpdate(); updateStepper();
           showNotification('Образование удалено');
         });
       });
@@ -899,7 +1000,7 @@
         rem.title='Удалить';
         rem.addEventListener('click', () => {
           state.skills = state.skills.filter(x=>x!==s);
-          persist(); renderDynamic(); renderPreview(); updateStepper();
+          persist(); renderDynamicSections(); schedulePreviewUpdate(); updateStepper();
           showNotification('Навык удалён');
         });
         badge.appendChild(rem);
@@ -915,45 +1016,52 @@
         wrapper.innerHTML=`
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div class="section-title"><div class="line"></div><div>Проект</div></div>
-            <div style="display:flex; gap:6px;">
-              <button class="small-btn remove-proj">Удалить</button>
-            </div>
+            <div><button class="small-btn remove-proj">Удалить</button></div>
           </div>
           <div>
             <small>Название</small>
-            <input class="input proj-name" value="${escapeHtml(p.name)}" placeholder="My App" />
+            <input class="input proj-name" value="${escapeHtml(p.name)}" placeholder="Название проекта" />
           </div>
-          <div>
+          <div style="margin-top:6px;">
             <small>Описание</small>
             <textarea class="input proj-desc" rows="2" placeholder="Что делает...">${escapeHtml(p.description)}</textarea>
           </div>
-          <div>
+          <div style="margin-top:6px;">
             <small>Ссылка</small>
             <input class="input proj-link" value="${escapeHtml(p.link)}" placeholder="https://..." />
           </div>
         `;
         projectsListEl.appendChild(wrapper);
-
         wrapper.querySelector('.proj-name').addEventListener('input', e => {
-          p.name=e.target.value; persist(); renderPreview(); updateStepper();
+          p.name=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.proj-desc').addEventListener('input', e => {
-          p.description=e.target.value; persist(); renderPreview(); updateStepper();
+          p.description=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.proj-link').addEventListener('input', e => {
-          p.link=e.target.value; persist(); renderPreview(); updateStepper();
+          p.link=e.target.value; persist(); schedulePreviewUpdate(); updateStepper();
         });
         wrapper.querySelector('.remove-proj').addEventListener('click', () => {
           state.projects = state.projects.filter(x=>x.id!==p.id);
-          persist(); renderDynamic(); renderPreview(); updateStepper();
+          persist(); renderDynamicSections(); schedulePreviewUpdate(); updateStepper();
           showNotification('Проект удалён');
         });
       });
     }
 
-    // ======== ПРЕВЬЮ ========
+    // ====== ПРЕВЬЮ ======
+    let pendingPreview = false;
+    function schedulePreviewUpdate(force=false) {
+      if (pendingPreview && !force) return;
+      pendingPreview = true;
+      requestAnimationFrame(() => {
+        renderPreview();
+        pendingPreview = false;
+      });
+    }
+
     function buildResumeHTML(data) {
-      function formatPeriod(start,end) {
+      function fmtPeriod(start,end) {
         if (!start && !end) return '';
         const opts={year:'numeric',month:'short'};
         try {
@@ -967,12 +1075,12 @@
       let expHTML='';
       data.experience.forEach(exp => {
         if (!exp.company && !exp.position) return;
-        expHTML+=`
+        expHTML += `
           <div class="item">
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
               <div>
                 <div style="font-weight:600;">${escapeHtml(exp.position||'')} ${exp.position && exp.company ? 'в' : ''} ${escapeHtml(exp.company||'')}</div>
-                <div class="muted" style="font-size:.7rem;">${formatPeriod(exp.start, exp.end)}</div>
+                <div class="muted" style="font-size:.7rem;">${fmtPeriod(exp.start, exp.end)}</div>
               </div>
             </div>
             <div style="margin-top:6px;">${escapeHtml(exp.description||'')}</div>
@@ -984,12 +1092,12 @@
       let eduHTML='';
       data.education.forEach(ed => {
         if (!ed.school) return;
-        eduHTML+=`
+        eduHTML += `
           <div class="item">
             <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px;">
               <div>
                 <div style="font-weight:600;">${escapeHtml(ed.degree||'')} — ${escapeHtml(ed.school||'')}</div>
-                <div class="muted" style="font-size:.7rem;">${formatPeriod(ed.start, ed.end)}</div>
+                <div class="muted" style="font-size:.7rem;">${fmtPeriod(ed.start, ed.end)}</div>
               </div>
             </div>
             ${ed.extra ? `<div style="margin-top:5px;">${escapeHtml(ed.extra)}</div>` : ''}
@@ -1007,7 +1115,7 @@
       let projectsHTML='';
       data.projects.forEach(p => {
         if (!p.name) return;
-        projectsHTML+=`
+        projectsHTML += `
           <div class="item">
             <div style="font-weight:600;">${escapeHtml(p.name)}</div>
             <div style="margin-top:4px;">${escapeHtml(p.description)}</div>
@@ -1016,25 +1124,88 @@
         `;
       });
 
-      // Classic sidebar
-      if (data.template === 'classic') {
-        const sidebarHTML = `
-          <div class="sidebar">
-            <div style="font-weight:700; font-size:1.1rem; margin-bottom:8px;">${escapeHtml(data.profile.fullName || '')}</div>
-            <div style="font-size:.9rem; margin-bottom:14px;">${escapeHtml(data.profile.title || '')}</div>
-            <div style="font-size:.8rem;">
-              <div style="font-weight:600; margin-bottom:4px;">Контакты</div>
+      // Собираем базовый вертикальный
+      const verticalCore = `
+        <div class="resume">
+          <div class="resume-header" style="display:flex; gap:16px; flex-wrap:wrap;">
+            <div style="display:flex; gap:14px; align-items:center; flex:1; min-width:250px;">
+              ${data.photo ? `<img src="${data.photo}" alt="Фото" class="photo" />` : `<div style="width:100px;height:100px;border-radius:50%;background:rgba(200,200,200,.15);margin-right:14px;flex-shrink:0;"></div>`}
+              <div>
+                <h1>${escapeHtml(data.profile.fullName || 'Ваше имя')}</h1>
+                <div class="title">${escapeHtml(data.profile.title || '')}</div>
+              </div>
+            </div>
+            <div class="contact" style="min-width:140px;">
               <div>${escapeHtml(data.profile.email || '')}</div>
               <div>${escapeHtml(data.profile.phone || '')}</div>
             </div>
+          </div>
+
+          ${data.summary ? `
+            <div style="margin-top:18px;">
+              <div class="section-title">
+                <div class="line"></div><div>О себе</div>
+              </div>
+              <div class="item">${escapeHtml(data.summary)}</div>
+            </div>` : ''}
+
+          ${expHTML ? `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Опыт работы</div>
+              </div>
+              ${expHTML}
+            </div>` : ''}
+
+          ${eduHTML ? `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Образование</div>
+              </div>
+              ${eduHTML}
+            </div>` : ''}
+
+          ${skillsHTML ? `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Навыки</div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">${skillsHTML}</div>
+            </div>` : ''}
+
+          ${projectsHTML ? `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Проекты</div>
+              </div>
+              ${projectsHTML}
+            </div>` : ''}
+        </div>
+      `;
+
+      // Шаблон classic (сайдбар)
+      if (data.template === 'classic') {
+        const sidebar = `
+          <div class="sidebar">
+            <div style="display:flex; gap:12px; align-items:center; margin-bottom:6px;">
+              ${data.photo ? `<img src="${data.photo}" alt="Фото" class="photo" style="width:80px;height:80px;border:2px solid #fff;" />` : `<div style="width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.2);margin-right:8px;"></div>`}
+              <div>
+                <div style="font-size:1.4rem; font-weight:700;">${escapeHtml(data.profile.fullName || '')}</div>
+                <div style="margin-top:4px;">${escapeHtml(data.profile.title || '')}</div>
+              </div>
+            </div>
+            <div style="margin-top:12px;">
+              <div style="font-weight:600; margin-bottom:4px; font-size:.75rem;">Контакты</div>
+              <div style="font-size:.8rem;">${escapeHtml(data.profile.email || '')}</div>
+              <div style="font-size:.8rem;">${escapeHtml(data.profile.phone || '')}</div>
+            </div>
             ${data.skills.length ? `
-              <div style="margin-top:12px;">
-                <div style="font-weight:600; margin-bottom:4px;">Навыки</div>
-                ${data.skills.map(s => `<div style="margin-bottom:4px; font-size:.75rem;">${escapeHtml(s)}</div>`).join('')}
+              <div style="margin-top:16px;">
+                <div style="font-weight:600; margin-bottom:6px; font-size:.75rem;">Навыки</div>
+                ${data.skills.map(s => `<div style="font-size:.75rem; margin-bottom:4px;">${escapeHtml(s)}</div>`).join('')}
               </div>` : ''}
           </div>
         `;
-        // main content
         let main = '';
         if (data.summary) {
           main += `
@@ -1074,7 +1245,7 @@
         }
         return `
           <div class="resume">
-            ${sidebarHTML}
+            ${sidebar}
             <div class="main-content">
               ${main}
             </div>
@@ -1082,180 +1253,38 @@
         `;
       }
 
-      // Modern / Elegant vertical layout
+      // Остальные шаблоны вертикально
       return `
         <div class="resume">
-          <div class="resume-header">
-            <div class="name-block">
-              <h1>${escapeHtml(data.profile.fullName || 'Ваше имя')}</h1>
-              <div class="title">${escapeHtml(data.profile.title || '')}</div>
-            </div>
-            <div class="contact">
-              <div>${escapeHtml(data.profile.email || '')}</div>
-              <div>${escapeHtml(data.profile.phone || '')}</div>
-            </div>
-          </div>
-
-          ${data.summary ? `
-            <div style="margin-top:18px;">
-              <div class="section-title">
-                <div class="line"></div><div>О себе</div>
-              </div>
-              <div class="item">${escapeHtml(data.summary)}</div>
-            </div>` : ''}
-
-          ${expHTML ? `
-            <div>
-              <div class="section-title">
-                <div class="line"></div><div>Опыт работы</div>
-              </div>
-              ${expHTML}
-            </div>` : ''}
-
-          ${eduHTML ? `
-            <div>
-              <div class="section-title">
-                <div class="line"></div><div>Образование</div>
-              </div>
-              ${eduHTML}
-            </div>` : ''}
-
-          ${skillsHTML ? `
-            <div>
-              <div class="section-title">
-                <div class="line"></div><div>Навыки</div>
-              </div>
-              <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                ${skillsHTML}
-              </div>
-            </div>` : ''}
-
-          ${projectsHTML ? `
-            <div>
-              <div class="section-title">
-                <div class="line"></div><div>Проекты</div>
-              </div>
-              ${projectsHTML}
-            </div>` : ''}
+          ${verticalCore}
         </div>
       `;
     }
 
-    function renderPreview(openBlank=false) {
+    function renderPreview() {
       const html = buildResumeHTML(state);
-      // Применяем шаблон на внешнем контейнере
-      resumeRenderEl.parentElement.classList.remove('tpl-modern','tpl-elegant','tpl-classic');
-      resumeRenderEl.className='resume';
-      if (state.template === 'modern') {
-        resumeRenderEl.classList.add('tpl-modern');
-        resumeRenderEl.parentElement.classList.add('tpl-modern');
-      } else if (state.template === 'elegant') {
-        resumeRenderEl.classList.add('tpl-elegant');
-        resumeRenderEl.parentElement.classList.add('tpl-elegant');
-      } else {
-        resumeRenderEl.classList.add('tpl-classic');
-        resumeRenderEl.parentElement.classList.add('tpl-classic');
-      }
+      // очищаем класс у контейнера
+      resumeRenderEl.className = 'resume';
+      document.getElementById('resume-render').parentElement.classList.remove('tpl-modern','tpl-elegant','tpl-classic','tpl-creative-dark','tpl-creative-light');
+      // применяем шаблон классы
+      let tplClass = '';
+      if (state.template === 'modern') tplClass = 'tpl-modern';
+      else if (state.template === 'elegant') tplClass = 'tpl-elegant';
+      else if (state.template === 'creative-dark') tplClass = 'tpl-creative-dark';
+      else if (state.template === 'creative-light') tplClass = 'tpl-creative-light';
+      else tplClass = 'tpl-classic';
+      resumeRenderEl.classList.add(tplClass);
+      resumeRenderEl.parentElement.classList.add(tplClass);
       resumeRenderEl.innerHTML = html;
 
-      templateDisplay.textContent = templateName(state.template);
-
-      if (openBlank) {
-        const w = window.open('');
-        w.document.write(`
-          <html>
-            <head>
-              <meta charset="UTF-8" />
-              <title>Превью резюме</title>
-              <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-              <style>
-                body{margin:0;background:#f2f4f9;font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;padding:30px;}
-                .resume{max-width:800px;margin:auto;background:#fff;border-radius:10px;box-shadow:0 40px 100px -20px rgba(0,0,0,.1);padding:30px;color:#1e2432;}
-                .resume-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
-                .name-block h1{margin:0;font-size:1.9rem;line-height:1.1;}
-                .title{margin-top:4px;font-weight:600;color:#555;}
-                .contact{text-align:right;font-size:.75rem;line-height:1.3;flex:1;}
-                .section-title{margin-top:24px;font-weight:700;display:flex;align-items:center;gap:8px;font-size:1rem;margin-bottom:6px;}
-                .line{height:3px;width:50px;background:#6366f1;border-radius:2px;}
-                .item{margin-bottom:12px;}
-                .muted{color:#777;}
-                .skill-badge{display:inline-block;background:#eef2f7;color:#444;padding:6px 12px;border-radius:999px;font-size:.65rem;margin:2px 4px 4px 0;}
-                a{color:#6366f1;text-decoration:none;}
-              </style>
-            </head>
-            <body>${html}</body>
-          </html>
-        `);
-        w.document.close();
-      }
+      templateDisplay.textContent = niceTemplateName(state.template);
+      templateBadge.textContent = niceTemplateName(state.template);
     }
 
-    // ======== PDF ЭКСПОРТ ========
-    async function exportPDF() {
-      const resumeNode = document.querySelector('#resume-render .resume');
-      if (!resumeNode) { showNotification('Нет контента'); return; }
-
-      showNotification('Генерирую PDF...', 2500);
-      try {
-        if (document.fonts && document.fonts.ready) {
-          await document.fonts.ready;
-        }
-
-        // Клонируем, чтобы убрать эффекты
-        const clone = resumeNode.cloneNode(true);
-        clone.style.transform='none';
-        clone.style.boxShadow='none';
-        clone.style.margin='0';
-        clone.style.opacity='1';
-        clone.style.maxWidth='800px';
-        clone.style.width='auto';
-
-        const wrapper = document.createElement('div');
-        wrapper.style.position='fixed';
-        wrapper.style.top='-9999px';
-        wrapper.style.left='-9999px';
-        wrapper.style.pointerEvents='none';
-        wrapper.style.background='#fff';
-        wrapper.appendChild(clone);
-        document.body.appendChild(wrapper);
-
-        const canvas = await html2canvas(clone, {
-          scale:2,
-          useCORS:true,
-          backgroundColor:'#ffffff',
-          logging:false
-        });
-        document.body.removeChild(wrapper);
-
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-          orientation:'portrait',
-          unit:'pt',
-          format:'a4'
-        });
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const margin = 40;
-
-        const ratio = Math.min((pageWidth - margin*2)/canvas.width, (pageHeight - margin*2)/canvas.height);
-        const imgW = canvas.width * ratio;
-        const imgH = canvas.height * ratio;
-
-        pdf.addImage(imgData, 'PNG', (pageWidth - imgW)/2, 60, imgW, imgH);
-        const filename = (state.profile.fullName || 'resume').trim().replace(/\s+/g,'_') + '.pdf';
-        pdf.save(filename);
-        showNotification('PDF готов');
-      } catch (e) {
-        console.error('PDF export error:', e);
-        showNotification('Ошибка экспорта');
-      }
-    }
-
-    // ======== STEPPER ========
+    // ====== STEPPER ======
     function updateStepper() {
       let filled=0;
-      if (state.profile.fullName||state.profile.title||state.profile.email||state.profile.phone) filled++;
+      if (state.profile.fullName || state.profile.title || state.profile.email || state.profile.phone) filled++;
       if (state.summary) filled++;
       if (state.experience.length) filled++;
       if (state.education.length || state.skills.length) filled++;
@@ -1265,7 +1294,88 @@
       });
     }
 
-    // ======== СТАРТ ========
+    // ====== PDF EXPORT ======
+    async function exportPDF() {
+      const resumeNode = document.querySelector('#resume-render .resume');
+      if (!resumeNode) { showNotification('Нет контента'); return; }
+      showNotification('Генерирую PDF...', 2200);
+      try {
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+        // Клонируем, убираем динамические эффекты
+        const clone = resumeNode.cloneNode(true);
+        clone.style.transform='none';
+        clone.style.margin='0';
+        clone.style.boxShadow='none';
+        clone.style.width='800px';
+
+        // Обёртка вне экрана
+        const wrapper = document.createElement('div');
+        wrapper.style.position='fixed';
+        wrapper.style.top='-9999px';
+        wrapper.style.left='-9999px';
+        wrapper.style.background='#fff';
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
+
+        // Рендерим с высоким scale для чёткости
+        const canvas = await html2canvas(clone, {
+          scale: 3,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          skipAutoScale: false
+        });
+        document.body.removeChild(wrapper);
+        const imgData = canvas.toDataURL('image/png');
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'pt',
+          format: 'a4'
+        });
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const margin = 35;
+        // масштабируем чтобы вписать
+        const ratio = Math.min((pageWidth - margin*2)/canvas.width, (pageHeight - margin*2)/canvas.height);
+        let imgW = canvas.width * ratio;
+        let imgH = canvas.height * ratio;
+        let cursorY = 40;
+        pdf.addImage(imgData, 'PNG', (pageWidth - imgW)/2, cursorY, imgW, imgH);
+
+        // Если длиннее одной страницы, добавим следующую (в случае, если получился overflow)
+        // (Простая логика: если imgH > pageHeight - 80)
+        if (imgH > pageHeight - 80) {
+          // нарезаем по высоте
+          let fullHeight = canvas.height;
+          let sliceHeight = Math.floor((pageHeight - margin*2)/ratio);
+          let y = 0;
+          while (y < fullHeight) {
+            const slice = document.createElement('canvas');
+            slice.width = canvas.width;
+            slice.height = Math.min(sliceHeight, fullHeight - y);
+            const ctx = slice.getContext('2d');
+            ctx.drawImage(canvas, 0, y, canvas.width, slice.height, 0, 0, canvas.width, slice.height);
+            const sliceData = slice.toDataURL('image/png');
+            if (y > 0) pdf.addPage();
+            const h = slice.height * ratio;
+            pdf.addImage(sliceData, 'PNG', (pageWidth - imgW)/2, 40, imgW, h);
+            y += sliceHeight;
+          }
+        }
+
+        const filename = (state.profile.fullName || 'resume').trim().replace(/\s+/g,'_') + '.pdf';
+        pdf.save(filename);
+        showNotification('PDF скачан');
+      } catch (e) {
+        console.error('exportPDF error', e);
+        showNotification('Ошибка экспорта');
+      }
+    }
+
+    // ====== ИНИЦИАЛИЗАЦИЯ ======
     init();
   </script>
 </body>
