@@ -8,7 +8,7 @@
   <!-- Telegram Web App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <!-- jsPDF + html2canvas для экспорта -->
+  <!-- html2canvas + jsPDF -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -32,7 +32,6 @@
       --accent:#6366f1;
       --transition:.45s cubic-bezier(.25,.8,.25,1);
       --gap:1.25rem;
-      --duration:.35s;
     }
     *{box-sizing:border-box;}
     body {
@@ -59,19 +58,8 @@
       from {opacity:0; transform:translateY(12px);}
       to {opacity:1; transform:translateY(0);}
     }
-    h1 {
-      font-size:2rem;
-      margin:0 0 .5rem;
-      font-weight:700;
-      line-height:1.1;
-    }
-    h2 {
-      font-size:1.1rem;
-      margin:0 0 .5rem;
-      font-weight:600;
-      text-transform:uppercase;
-      letter-spacing:1px;
-    }
+    h1 {font-size:2rem; margin:0 0 .5rem; font-weight:700; line-height:1.1;}
+    h2 {font-size:1.1rem; margin:0 0 .5rem; font-weight:600; text-transform:uppercase; letter-spacing:1px;}
     p {margin:0 0 1rem; line-height:1.5;}
     .panel {
       background: var(--card);
@@ -138,12 +126,7 @@
       margin-right:6px;
       margin-bottom:4px;
     }
-    .stepper {
-      display:flex;
-      gap:.5rem;
-      margin-bottom:1rem;
-      position:relative;
-    }
+    .stepper {display:flex; gap:.5rem; margin-bottom:1rem; position:relative;}
     .step-dot {
       flex:1;
       background: rgba(255,255,255,.08);
@@ -157,12 +140,7 @@
       background: var(--accent);
       box-shadow:0 0 14px rgba(99,102,241,.6);
     }
-    .template-switcher {
-      display:flex;
-      gap:8px;
-      margin-bottom:1rem;
-      flex-wrap:wrap;
-    }
+    .template-switcher {display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap;}
     .template-card {
       flex:1;
       background: rgba(255,255,255,.03);
@@ -184,9 +162,7 @@
       background: linear-gradient(135deg,#4f46e5,#6366f1);
       color:#fff;
     }
-    .template-card .info {
-      flex:1;
-    }
+    .template-card .info {flex:1;}
     .section-wrapper {
       border:1px solid rgba(255,255,255,.08);
       border-radius:12px;
@@ -197,9 +173,7 @@
       background: rgba(255,255,255,.01);
       transition:.3s;
     }
-    .section-wrapper:hover {
-      box-shadow:0 20px 50px -10px rgba(99,102,241,.2);
-    }
+    .section-wrapper:hover {box-shadow:0 20px 50px -10px rgba(99,102,241,.2);}
     .section-title {
       display:flex;
       align-items:center;
@@ -210,12 +184,7 @@
       text-transform:uppercase;
       letter-spacing:1px;
     }
-    .line {
-      width:38px;
-      height:4px;
-      background: var(--accent);
-      border-radius:3px;
-    }
+    .line {width:38px; height:4px; background: var(--accent); border-radius:3px;}
     .skill-badge {
       display:inline-block;
       background:#eef2f7;
@@ -258,17 +227,15 @@
       padding:28px 32px;
       max-width:800px;
       margin:auto;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
       position:relative;
       overflow:hidden;
       transform:scale(1);
       transition:.3s;
       opacity:0;
-      animation:appear .6s forwards;
+      font-size:14px;
     }
-    @keyframes appear {
-      to {opacity:1;}
-    }
+    @keyframes appear {to {opacity:1;}}
+    .resume {animation:appear .5s forwards;}
     .resume-header {
       display:flex;
       justify-content:space-between;
@@ -279,6 +246,7 @@
       margin:0;
       font-size:1.9rem;
       line-height:1.1;
+      font-weight:700;
     }
     .title {
       margin-top:4px;
@@ -305,42 +273,69 @@
       margin-right:6px;
     }
 
-    /* Template variants for resume content */
-    .tpl-modern .resume {
-      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-      border:2px solid #6366f1;
-      padding:32px 36px;
+    /* ===== шаблоны ===== */
+    /* Classic: двухколоночный с сайдбаром */
+    .tpl-classic .resume {
+      display:grid;
+      grid-template-columns:1fr 2fr;
+      gap:24px;
+      position:relative;
+      padding:24px 28px;
     }
-    .tpl-modern .resume-header {
-      border-bottom:2px solid #6366f1;
-      padding-bottom:10px;
-      margin-bottom:14px;
+    .tpl-classic .resume-header {grid-column:1/-1; display:none;}
+    .tpl-classic .sidebar {
+      background: var(--accent);
+      color:#fff;
+      padding:20px 16px;
+      border-radius:8px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
-    .tpl-modern .section-title .line {background:#6366f1;}
+    .tpl-classic .sidebar .section-title {color:rgba(255,255,255,.85); margin-top:8px;}
+    .tpl-classic .main-content {padding:0;}
+    .tpl-classic .section-title .line {background:#fff;}
+    .tpl-classic h1 {margin:0; font-size:1.8rem; color:#fff;}
+    .tpl-classic .title {color:rgba(255,255,255,.9);}
+    .tpl-classic .contact {display:none;}
 
+    /* Modern: верхняя цветная полоса */
+    .tpl-modern .resume {
+      position:relative;
+      padding-top:14px;
+      border:1px solid rgba(99,102,241,.4);
+      border-radius:10px;
+    }
+    .tpl-modern .resume::before {
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:8px;
+      background: var(--accent);
+      border-radius:4px 4px 0 0;
+    }
+    .tpl-modern .section-title .line {background: var(--accent);}
+    .tpl-modern .name-block h1 {font-size:2rem;}
+    .tpl-modern .title {font-size:.95rem;}
+
+    /* Elegant: светлый, serif */
     .tpl-elegant .resume {
       font-family:'Merriweather',serif;
-      padding:32px 34px;
       background:#f9f8f6;
+      padding:32px 34px;
+      color:#2e2e34;
     }
     .tpl-elegant h1 {
       font-family:'Merriweather',serif;
+      font-size:2.1rem;
+      margin:0;
     }
-    .tpl-elegant .title {
-      color:#444;
-    }
-    .tpl-elegant .resume-header {
-      border-bottom:1px solid #ccc;
-      padding-bottom:8px;
-      margin-bottom:16px;
-    }
+    .tpl-elegant .title {color:#555; margin-top:4px; font-weight:500;}
     .tpl-elegant .section-title .line {background:#444;}
-
-    .tpl-classic .resume {
-      background:#fff;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-      box-shadow:0 35px 90px -20px rgba(0,0,0,.08);
-    }
+    .tpl-elegant .contact {color:#555;}
+    .tpl-elegant .skill-badge {background:#e6e2dd; color:#3f3f46;}
 
     .notification {
       position:fixed;
@@ -414,22 +409,35 @@
         <div class="step-dot" data-step-index="4"></div>
       </div>
 
-      <!-- Шаблоны -->
-      <div class="template-switcher" aria-label="Выбор шаблона">
-        <div class="template-card selected" data-template="classic">
-          <div class="info">
-            <strong>Classic</strong><div style="font-size:.65rem;">Чёткий минимал</div>
+      <!-- Шаблоны и цвет -->
+      <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start;">
+        <div style="flex:1; min-width:260px;">
+          <div class="template-switcher" aria-label="Выбор шаблона">
+            <div class="template-card selected" data-template="classic">
+              <div class="info">
+                <strong>Classic</strong><div style="font-size:.65rem;">Боковая панель, контраст</div>
+              </div>
+            </div>
+            <div class="template-card" data-template="modern">
+              <div class="info">
+                <strong>Modern</strong><div style="font-size:.65rem;">Верхняя цветная полоса</div>
+              </div>
+            </div>
+            <div class="template-card" data-template="elegant">
+              <div class="info">
+                <strong>Elegant</strong><div style="font-size:.65rem;">Типографика, светлый</div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="template-card" data-template="modern">
-          <div class="info">
-            <strong>Modern</strong><div style="font-size:.65rem;">Контраст, акцент</div>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div class="section-title" style="margin:0;">
+              <div class="line" style="margin-right:6px;"></div><div style="font-size:.8rem;">Цвет акцента</div>
+            </div>
+            <input type="color" id="accent-picker" value="#6366f1" style="border:none; padding:0; width:36px; height:36px; border-radius:6px; cursor:pointer;" />
           </div>
-        </div>
-        <div class="template-card" data-template="elegant">
-          <div class="info">
-            <strong>Elegant</strong><div style="font-size:.65rem;">Серый светлый, типографика</div>
-          </div>
+          <div style="font-size:.75rem; color:rgba(255,255,255,.75);">Выбран: <span id="current-template">Classic</span></div>
         </div>
       </div>
 
@@ -541,7 +549,7 @@
           <div style="font-size:.75rem; color: var(--muted);">Живое отображение</div>
         </div>
         <div>
-          <div class="pill">Шаблон: <span id="current-template">Classic</span></div>
+          <div class="pill">Шаблон: <span id="template-display">Classic</span></div>
         </div>
       </div>
       <div class="preview-wrapper" id="preview-container">
@@ -555,7 +563,7 @@
     function uuid() {
       return crypto.randomUUID?.() || Math.random().toString(36).substring(2,9);
     }
-    function showNotification(msg, duration = 1800) {
+    function showNotification(msg, duration = 1700) {
       const n = document.getElementById('notif');
       n.textContent = msg;
       n.classList.add('show');
@@ -577,7 +585,8 @@
         education: [],
         skills: [],
         projects: [],
-        template: 'classic'
+        template: 'classic',
+        accent: '#6366f1'
       };
     }
     function escapeHtml(str) {
@@ -586,7 +595,7 @@
       })[m]; });
     }
 
-    // ======== ИНИЦИАЛИЗАЦИЯ Telegram WebApp ========
+    // ======== TELEGRAM WebApp ========
     if (window.Telegram?.WebApp) {
       window.Telegram.WebApp.ready();
       const tgBtn = document.getElementById('telegram-ready');
@@ -612,10 +621,15 @@
     const skillsListEl = document.getElementById('skills-list');
     const projectsListEl = document.getElementById('projects-list');
     const resumeRenderEl = document.getElementById('resume-render');
-    const currentTemplateLabel = document.getElementById('current-template');
+    const templateDisplay = document.getElementById('template-display');
+    const accentPicker = document.getElementById('accent-picker');
 
     // ======== ИНИЦИАЛИЗАЦИЯ ========
     function init() {
+      if (state.accent) {
+        document.documentElement.style.setProperty('--accent', state.accent);
+      }
+      accentPicker.value = state.accent || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
       loadForm();
       renderDynamic();
       renderPreview();
@@ -630,7 +644,7 @@
       emailEl.value = state.profile.email;
       phoneEl.value = state.profile.phone;
       summaryEl.value = state.summary;
-      currentTemplateLabel.textContent = templateName(state.template);
+      templateDisplay.textContent = templateName(state.template);
     }
 
     function bindEvents() {
@@ -640,81 +654,70 @@
           state.profile.title = titleEl.value;
           state.profile.email = emailEl.value;
           state.profile.phone = phoneEl.value;
-          persist();
-          renderPreview();
-          updateStepper();
+          persist(); renderPreview(); updateStepper();
         });
       });
       summaryEl.addEventListener('input', () => {
         state.summary = summaryEl.value;
-        persist();
-        renderPreview();
-        updateStepper();
+        persist(); renderPreview(); updateStepper();
       });
+
       document.getElementById('add-experience').addEventListener('click', () => {
         state.experience.push({ id: uuid(), company:'', position:'', start:'', end:'', description:'' });
-        persist();
-        renderDynamic();
-        renderPreview();
-        updateStepper();
+        persist(); renderDynamic(); renderPreview(); updateStepper();
         showNotification('Добавлен опыт');
       });
+
       document.getElementById('add-education').addEventListener('click', () => {
         state.education.push({ id: uuid(), school:'', degree:'', start:'', end:'', extra:'' });
-        persist();
-        renderDynamic();
-        renderPreview();
-        updateStepper();
+        persist(); renderDynamic(); renderPreview(); updateStepper();
         showNotification('Добавлено образование');
       });
+
       document.getElementById('add-skill').addEventListener('click', () => {
         const v = document.getElementById('new-skill').value.trim();
         if (v) {
           if (!state.skills.includes(v)) {
             state.skills.push(v);
-            persist();
-            renderDynamic();
-            renderPreview();
-            updateStepper();
+            persist(); renderDynamic(); renderPreview(); updateStepper();
             showNotification('Навык добавлен');
           } else showNotification('Уже есть');
           document.getElementById('new-skill').value='';
         }
       });
+
       document.getElementById('add-project').addEventListener('click', () => {
         state.projects.push({ id: uuid(), name:'', description:'', link:'' });
-        persist();
-        renderDynamic();
-        renderPreview();
-        updateStepper();
+        persist(); renderDynamic(); renderPreview(); updateStepper();
         showNotification('Добавлен проект');
       });
+
       document.getElementById('save-btn').addEventListener('click', () => {
-        persist();
-        showNotification('Сохранено');
+        persist(); showNotification('Сохранено');
       });
+
       document.getElementById('load-btn').addEventListener('click', () => {
         state = getData();
-        loadForm();
-        renderDynamic();
-        renderPreview();
-        updateStepper();
+        if (state.accent) document.documentElement.style.setProperty('--accent', state.accent);
+        loadForm(); renderDynamic(); renderPreview(); updateStepper(); applyTemplateSelection();
         showNotification('Загружено');
       });
+
       document.getElementById('reset-btn').addEventListener('click', () => {
         if (confirm('Очистить всё?')) {
           state = defaultData();
           persist();
-          loadForm();
-          renderDynamic();
-          renderPreview();
-          updateStepper();
+          document.documentElement.style.setProperty('--accent', state.accent);
+          accentPicker.value = state.accent;
+          loadForm(); renderDynamic(); renderPreview(); updateStepper(); applyTemplateSelection();
           showNotification('Сброшено');
         }
       });
+
       document.getElementById('preview-btn').addEventListener('click', () => {
         renderPreview(true);
       });
+
       document.getElementById('export-pdf-btn').addEventListener('click', exportPDF);
 
       document.querySelectorAll('.template-card').forEach(c => {
@@ -724,10 +727,21 @@
           persist();
           applyTemplateSelection();
           renderPreview();
-          currentTemplateLabel.textContent = templateName(tpl);
+          templateDisplay.textContent = templateName(tpl);
           showNotification('Шаблон: ' + templateName(tpl));
         });
       });
+
+      accentPicker.addEventListener('input', e => {
+        const c = e.target.value;
+        document.documentElement.style.setProperty('--accent', c);
+        state.accent = c;
+        persist();
+        renderPreview();
+      });
+
+      // Реактивно обновлять прогресс
+      setInterval(updateStepper, 800);
     }
 
     function templateName(k) {
@@ -789,24 +803,19 @@
         experienceListEl.appendChild(wrapper);
 
         wrapper.querySelector('.exp-company').addEventListener('input', e => {
-          exp.company = e.target.value;
-          persist(); renderPreview(); updateStepper();
+          exp.company = e.target.value; persist(); renderPreview(); updateStepper();
         });
         wrapper.querySelector('.exp-position').addEventListener('input', e => {
-          exp.position = e.target.value;
-          persist(); renderPreview(); updateStepper();
+          exp.position = e.target.value; persist(); renderPreview(); updateStepper();
         });
         wrapper.querySelector('.exp-start').addEventListener('input', e => {
-          exp.start = e.target.value;
-          persist(); renderPreview(); updateStepper();
+          exp.start = e.target.value; persist(); renderPreview(); updateStepper();
         });
         wrapper.querySelector('.exp-end').addEventListener('input', e => {
-          exp.end = e.target.value;
-          persist(); renderPreview(); updateStepper();
+          exp.end = e.target.value; persist(); renderPreview(); updateStepper();
         });
         wrapper.querySelector('.exp-desc').addEventListener('input', e => {
-          exp.description = e.target.value;
-          persist(); renderPreview(); updateStepper();
+          exp.description = e.target.value; persist(); renderPreview(); updateStepper();
         });
         wrapper.querySelector('.remove-exp').addEventListener('click', () => {
           state.experience = state.experience.filter(x => x.id !== exp.id);
@@ -954,6 +963,7 @@
         } catch { return `${start||''} — ${end||''}`; }
       }
 
+      // Опыт
       let expHTML='';
       data.experience.forEach(exp => {
         if (!exp.company && !exp.position) return;
@@ -970,6 +980,7 @@
         `;
       });
 
+      // Образование
       let eduHTML='';
       data.education.forEach(ed => {
         if (!ed.school) return;
@@ -986,11 +997,13 @@
         `;
       });
 
+      // Навыки
       let skillsHTML='';
       data.skills.forEach(s => {
         skillsHTML += `<div class="skill-badge">${escapeHtml(s)}</div>`;
       });
 
+      // Проекты
       let projectsHTML='';
       data.projects.forEach(p => {
         if (!p.name) return;
@@ -1003,6 +1016,73 @@
         `;
       });
 
+      // Classic sidebar
+      if (data.template === 'classic') {
+        const sidebarHTML = `
+          <div class="sidebar">
+            <div style="font-weight:700; font-size:1.1rem; margin-bottom:8px;">${escapeHtml(data.profile.fullName || '')}</div>
+            <div style="font-size:.9rem; margin-bottom:14px;">${escapeHtml(data.profile.title || '')}</div>
+            <div style="font-size:.8rem;">
+              <div style="font-weight:600; margin-bottom:4px;">Контакты</div>
+              <div>${escapeHtml(data.profile.email || '')}</div>
+              <div>${escapeHtml(data.profile.phone || '')}</div>
+            </div>
+            ${data.skills.length ? `
+              <div style="margin-top:12px;">
+                <div style="font-weight:600; margin-bottom:4px;">Навыки</div>
+                ${data.skills.map(s => `<div style="margin-bottom:4px; font-size:.75rem;">${escapeHtml(s)}</div>`).join('')}
+              </div>` : ''}
+          </div>
+        `;
+        // main content
+        let main = '';
+        if (data.summary) {
+          main += `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>О себе</div>
+              </div>
+              <div class="item">${escapeHtml(data.summary)}</div>
+            </div>`;
+        }
+        if (expHTML) {
+          main += `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Опыт работы</div>
+              </div>
+              ${expHTML}
+            </div>`;
+        }
+        if (eduHTML) {
+          main += `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Образование</div>
+              </div>
+              ${eduHTML}
+            </div>`;
+        }
+        if (projectsHTML) {
+          main += `
+            <div>
+              <div class="section-title">
+                <div class="line"></div><div>Проекты</div>
+              </div>
+              ${projectsHTML}
+            </div>`;
+        }
+        return `
+          <div class="resume">
+            ${sidebarHTML}
+            <div class="main-content">
+              ${main}
+            </div>
+          </div>
+        `;
+      }
+
+      // Modern / Elegant vertical layout
       return `
         <div class="resume">
           <div class="resume-header">
@@ -1063,16 +1143,22 @@
 
     function renderPreview(openBlank=false) {
       const html = buildResumeHTML(state);
-      // применяем шаблон класс/модерн/элегант к обёртке
+      // Применяем шаблон на внешнем контейнере
       resumeRenderEl.parentElement.classList.remove('tpl-modern','tpl-elegant','tpl-classic');
-      resumeRenderEl.className = 'resume';
-      if (state.template === 'modern') resumeRenderEl.classList.add('tpl-modern');
-      else if (state.template === 'elegant') resumeRenderEl.classList.add('tpl-elegant');
-      else resumeRenderEl.classList.add('tpl-classic');
-
+      resumeRenderEl.className='resume';
+      if (state.template === 'modern') {
+        resumeRenderEl.classList.add('tpl-modern');
+        resumeRenderEl.parentElement.classList.add('tpl-modern');
+      } else if (state.template === 'elegant') {
+        resumeRenderEl.classList.add('tpl-elegant');
+        resumeRenderEl.parentElement.classList.add('tpl-elegant');
+      } else {
+        resumeRenderEl.classList.add('tpl-classic');
+        resumeRenderEl.parentElement.classList.add('tpl-classic');
+      }
       resumeRenderEl.innerHTML = html;
-      // визуально отражаем шаблон для внешнего контейнера (для PDF)
-      resumeRenderEl.closest('#resume-render').className = `resume tpl-${state.template}`;
+
+      templateDisplay.textContent = templateName(state.template);
 
       if (openBlank) {
         const w = window.open('');
@@ -1111,27 +1197,57 @@
 
       showNotification('Генерирую PDF...', 2500);
       try {
-        // масштаб для плотности
-        const canvas = await html2canvas(resumeNode, { scale: 2, useCORS:true, backgroundColor: null });
+        if (document.fonts && document.fonts.ready) {
+          await document.fonts.ready;
+        }
+
+        // Клонируем, чтобы убрать эффекты
+        const clone = resumeNode.cloneNode(true);
+        clone.style.transform='none';
+        clone.style.boxShadow='none';
+        clone.style.margin='0';
+        clone.style.opacity='1';
+        clone.style.maxWidth='800px';
+        clone.style.width='auto';
+
+        const wrapper = document.createElement('div');
+        wrapper.style.position='fixed';
+        wrapper.style.top='-9999px';
+        wrapper.style.left='-9999px';
+        wrapper.style.pointerEvents='none';
+        wrapper.style.background='#fff';
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
+
+        const canvas = await html2canvas(clone, {
+          scale:2,
+          useCORS:true,
+          backgroundColor:'#ffffff',
+          logging:false
+        });
+        document.body.removeChild(wrapper);
+
         const imgData = canvas.toDataURL('image/png');
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'pt',
-          format: 'a4'
+          orientation:'portrait',
+          unit:'pt',
+          format:'a4'
         });
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
-        // вычисляем пропорцию для вставки
-        const ratio = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
+        const margin = 40;
+
+        const ratio = Math.min((pageWidth - margin*2)/canvas.width, (pageHeight - margin*2)/canvas.height);
         const imgW = canvas.width * ratio;
         const imgH = canvas.height * ratio;
-        pdf.addImage(imgData, 'PNG', (pageWidth - imgW)/2, 40, imgW, imgH);
-        const name = (state.profile.fullName || 'resume').trim().replace(/\s+/g, '_') + '.pdf';
-        pdf.save(name);
-        showNotification('PDF скачан');
+
+        pdf.addImage(imgData, 'PNG', (pageWidth - imgW)/2, 60, imgW, imgH);
+        const filename = (state.profile.fullName || 'resume').trim().replace(/\s+/g,'_') + '.pdf';
+        pdf.save(filename);
+        showNotification('PDF готов');
       } catch (e) {
-        console.error(e);
+        console.error('PDF export error:', e);
         showNotification('Ошибка экспорта');
       }
     }
@@ -1151,7 +1267,6 @@
 
     // ======== СТАРТ ========
     init();
-    setInterval(updateStepper, 700);
   </script>
 </body>
 </html>
