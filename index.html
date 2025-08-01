@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Resume Builder Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Telegram Web App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- jsPDF для экспорта -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg:#0f111a;
+      --card:#1f2337;
+      --card-alt:#292e4f;
+      --text:#f0f2fa;
+      --muted:#8a94b0;
+      --radius:14px;
+      --shadow:0 20px 60px -10px rgba(15,17,26,.55);
+      --accent:#6366f1;
+      --transition:.45s cubic-bezier(.25,.8,.25,1);
+      --gap:1.25rem;
+    }
+    *{box-sizing:border-box;}
+    body {
+      margin:0;
+      font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      background: linear-gradient(135deg,#0f111a 0%,#1d223e 70%);
+      color: var(--text);
+      min-height:100vh;
+      -webkit-font-smoothing:antialiased;
+      position:relative;
+      padding-bottom:80px;
+    }
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1rem 4rem;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:2rem;
+    }
+    h1 {
+      font-size:2rem;
+      margin:0 0 .5rem;
+      font-weight:700;
+      line-height:1.1;
+    }
+    h2 {
+      font-size:1.1rem;
+      margin:0 0 .5rem;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:1px;
+    }
+    p {margin:0 0 1rem; line-height:1.5;}
+    .panel {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding:1.5rem;
+      position:relative;
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:1rem;
+      transform:translateY(0);
+      transition: var(--transition);
+    }
+    .panel small {
+      display:block;
+      margin-bottom:6px;
+      color: var(--muted);
+    }
+    .tagline {
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+    }
+    .btn {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      cursor:pointer;
+      border:none;
+      padding:.7rem 1.2rem;
+      border-radius:8px;
+      font-weight:600;
+      background: var(--accent);
+      color:#fff;
+      position:relative;
+      overflow:hidden;
+      transition: .3s ease;
+    }
+    .btn:hover {
+      filter:brightness(1.05);
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+    }
+    .flex {display:flex; gap:1rem; flex-wrap:wrap;}
+    .input {
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.1);
+      padding:.75rem 1rem;
+      border-radius:8px;
+      width:100%;
+      font-size:.95rem;
+      color: var(--text);
+      outline:none;
+      transition: .2s ease;
+    }
+    .input:focus {
+      border-color: var(--accent);
+      box-shadow:0 0 16px rgba(99,102,241,.35);
+    }
+    .pill {
+      background: rgba(255,255,255,.08);
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:.65rem;
+      display:inline-block;
+      margin-right:6px;
+      margin-bottom:4px;
+    }
+    .stepper {
+      display:flex;
+      gap:.5rem;
+      margin-bottom:1rem;
+    }
+    .step-dot {
+      flex:1;
+      background: rgba(255,255,255,.08);
+      height:6px;
+      border-radius:3px;
+      position:relative;
+      overflow:hidden;
+    }
+    .step-dot.active {
+      background: var(--accent);
+      box-shadow:0 0 12px rgba(99,102,241,.6);
+    }
+    .card {
+      background: var(--card-alt);
+      border-radius:12px;
+      padding:1rem;
+      position:relative;
+      overflow:hidden;
+      transition: var(--transition);
+    }
+    .section-wrapper {
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;
+      padding:1rem;
+      position:relative;
+      margin-bottom:1rem;
+      overflow:hidden;
+    }
+    .section-actions {
+      display:flex;
+      gap:.5rem;
+      flex-wrap:wrap;
+      margin-top:4px;
+    }
+    .small-btn {
+      background: rgba(255,255,255,.06);
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:.75rem;
+      color: var(--text);
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      transition:.2s;
+    }
+    .small-btn:hover {
+      background: rgba(255,255,255,.1);
+    }
+    .template-switcher {
+      display:flex;
+      gap:8px;
+      margin-bottom:1rem;
+      flex-wrap:wrap;
+    }
+    .template-card {
+      flex:1;
+      background: rgba(255,255,255,.03);
+      padding:10px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      position:relative;
+      border:2px solid transparent;
+      transition:.25s;
+      min-width:120px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .template-card.selected {
+      border-color: var(--accent);
+      box-shadow:0 0 20px rgba(99,102,241,.4);
+    }
+    .preview-wrapper {
+      background:#0f111a;
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:12px;
+      padding:1rem;
+      position:relative;
+      overflow:auto;
+    }
+    .resume {
+      background:#fff;
+      color:#1e2432;
+      border-radius:10px;
+      padding:24px 28px;
+      max-width:800px;
+      margin:auto;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      position:relative;
+      overflow:hidden;
+      transform:scale(.98);
+      transition:.3s;
+    }
+    .resume-header {
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .name-block {
+      flex:1;
+    }
+    .name-block h1 {
+      margin:0;
+      font-size:1.9rem;
+      line-height:1.1;
+    }
+    .title {
+      margin-top:4px;
+      font-weight:600;
+      color:#555;
+    }
+    .contact {
+      text-align:right;
+      font-size:.75rem;
+      line-height:1.3;
+      flex:1;
+    }
+    .section-title {
+      margin:0;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:1rem;
+      margin-bottom:6px;
+    }
+    .line {
+      height:3px;
+      width:50px;
+      background: var(--accent);
+      border-radius:2px;
+    }
+    .item {
+      margin-bottom:12px;
+    }
+    .muted {
+      color:#777;
+    }
+    .skill-badge {
+      display:inline-block;
+      background:#eef2f7;
+      color:#444;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:.65rem;
+      margin:2px 4px 4px 0;
+    }
+    .fade-in {
+      opacity:0;
+      transform:translateY(6px);
+      animation:appear .7s forwards;
+    }
+    @keyframes appear {
+      to {opacity:1; transform:translateY(0);}
+    }
+
+    /* Responsive */
+    @media (max-width:1100px){
+      .app{grid-template-columns:1fr;}
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position:relative;
+      cursor:help;
+    }
+    .tooltip .tip {
+      position:absolute;
+      top:-6px;
+      right:100%;
+      background:rgba(0,0,0,.85);
+      padding:6px 10px;
+      border-radius:6px;
+      font-size:.6rem;
+      white-space:nowrap;
+      transform:translateX(-6px);
+      z-index:5;
+      opacity:0;
+      pointer-events:none;
+      transition:.2s;
+      color:#fff;
+    }
+    .tooltip:hover .tip {
+      opacity:1;
+    }
+
+    .pill-theme {
+      display:inline-block;
+      padding:6px 14px;
+      background: rgba(255,255,255,.04);
+      border-radius:999px;
+      font-size:.6rem;
+      margin-right:4px;
+    }
+
+    .notification {
+      position:fixed;
+      top:16px;
+      right:16px;
+      background:rgba(99,102,241,.95);
+      color:#fff;
+      padding:12px 18px;
+      border-radius:8px;
+      box-shadow:0 30px 60px -10px rgba(99,102,241,.5);
+      display:flex;
+      gap:8px;
+      align-items:center;
+      font-size:.9rem;
+      z-index:100;
+      opacity:0;
+      pointer-events:none;
+      transition:.3s;
+    }
+    .notification.show {
+      opacity:1;
+      pointer-events:auto;
+    }
+    .theme-toggle {
+      background: rgba(255,255,255,.07);
+      border:none;
+      padding:8px 12px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:.9rem;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      color: var(--text);
+      margin-left:auto;
+    }
+    .tagline span {
+      position:relative;
+      display:inline-block;
+      overflow:hidden;
+    }
+    .pulse {
+      animation:pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0% {transform:scale(1);}
+      50% {transform:scale(1.02);}
+      100% {transform:scale(1);}
+    }
+  </style>
+</head>
+<body>
+  <!-- Notification -->
+  <div id="notif" class="notification" aria-live="polite"></div>
+
+  <div class="app">
+    <!-- Левая панель: редактор -->
+    <div class="panel" aria-label="Редактор резюме">
+      <div style="display:flex; gap:8px; align-items:center;">
+        <div>
+          <h1>Резюме</h1>
+          <div class="tagline">
+            <span>Создай профессиональное резюме</span>
+            <span class="pill">Без бэка</span>
+            <span class="pill">Сохранение в браузере</span>
+            <span class="pill">PDF экспорт</span>
+          </div>
+        </div>
+        <button class="theme-toggle" id="telegram-ready" title="Телеграм WebApp готов">📦 Telegram</button>
+      </div>
+
+      <!-- Степпер -->
+      <div class="stepper" aria-label="Прогресс заполнения">
+        <div class="step-dot" data-step-index="0"></div>
+        <div class="step-dot" data-step-index="1"></div>
+        <div class="step-dot" data-step-index="2"></div>
+        <div class="step-dot" data-step-index="3"></div>
+        <div class="step-dot" data-step-index="4"></div>
+      </div>
+
+      <!-- Выбор шаблона -->
+      <div class="template-switcher" aria-label="Выбор шаблона">
+        <div class="template-card selected" data-template="default">
+          <div style="flex:1;">
+            <strong>Классический</strong>
+            <div style="font-size:.65rem; margin-top:4px;">Минимал, светлый акцент</div>
+          </div>
+        </div>
+        <div class="template-card" data-template="modern">
+          <div style="flex:1;">
+            <strong>Современный</strong>
+            <div style="font-size:.65rem; margin-top:4px;">Контрастный, акцент</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Форма -->
+      <div id="form-area">
+        <!-- Профиль -->
+        <div class="section-wrapper" data-step="0">
+          <div class="section-title">
+            <div class="line"></div><div>Профиль</div>
+          </div>
+          <div class="flex">
+            <div style="flex:1;">
+              <small>Имя и фамилия</small>
+              <input class="input" type="text" id="fullName" placeholder="Иван Иванов" />
+            </div>
+            <div style="flex:1;">
+              <small>Должность / заголовок</small>
+              <input class="input" type="text" id="title" placeholder="Frontend разработчик" />
+            </div>
+          </div>
+          <div class="flex">
+            <div style="flex:1;">
+              <small>Email</small>
+              <input class="input" type="email" id="email" placeholder="ivan@example.com" />
+            </div>
+            <div style="flex:1;">
+              <small>Телефон</small>
+              <input class="input" type="text" id="phone" placeholder="+7 912 345-67-89" />
+            </div>
+          </div>
+        </div>
+
+        <!-- О себе -->
+        <div class="section-wrapper" data-step="1">
+          <div class="section-title">
+            <div class="line"></div><div>О себе</div>
+          </div>
+          <textarea
+            class="input"
+            id="summary"
+            rows="4"
+            placeholder="Краткое профессиональное описание. Пример: Опытный фронтенд-разработчик с 5+ лет в создании быстрых и доступных веб-интерфейсов."
+          ></textarea>
+        </div>
+
+        <!-- Опыт -->
+        <div class="section-wrapper" data-step="2">
+          <div class="section-title">
+            <div class="line"></div><div>Опыт работы</div>
+          </div>
+          <div id="experience-list"></div>
+          <div class="section-actions">
+            <button class="small-btn" id="add-experience">+ Добавить опыт</button>
+            <div class="pill-theme">Перетаскивай, редактируй, удаляй</div>
+          </div>
+        </div>
+
+        <!-- Образование и навыки -->
+        <div class="section-wrapper" data-step="3">
+          <div class="section-title">
+            <div class="line"></div><div>Образование</div>
+          </div>
+          <div id="education-list"></div>
+          <div class="section-actions">
+            <button class="small-btn" id="add-education">+ Добавить образование</button>
+          </div>
+
+          <div style="margin-top:1.5rem;">
+            <div class="section-title">
+              <div class="line"></div><div>Навыки</div>
+            </div>
+            <div id="skills-list" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+            <div style="margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;">
+              <input class="input" style="flex:1; min-width:140px;" id="new-skill" placeholder="Новая навык (напр. JavaScript)" />
+              <button class="small-btn" id="add-skill">Добавить</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Проекты -->
+        <div class="section-wrapper" data-step="4">
+          <div class="section-title">
+            <div class="line"></div><div>Проекты</div>
+          </div>
+          <div id="projects-list"></div>
+          <div class="section-actions">
+            <button class="small-btn" id="add-project">+ Добавить проект</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Управление -->
+      <div style="margin-top:8px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+        <div style="flex:1; min-width:220px;">
+          <button class="btn" id="save-btn">Сохранить</button>
+          <button class="btn btn-secondary" id="load-btn">Загрузить</button>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn" id="preview-btn">Превью</button>
+          <button class="btn" id="export-pdf-btn">Экспорт в PDF</button>
+          <button class="btn btn-secondary" id="reset-btn">Очистить всё</button>
+        </div>
+      </div>
+
+      <div style="margin-top:8px; font-size:.8rem; color:rgba(255,255,255,.7);">
+        Данные сохраняются в браузере. Можно интегрировать отправку в Telegram через WebApp API.
+      </div>
+    </div>
+
+    <!-- Правая панель: живое превью -->
+    <div class="panel" aria-label="Превью резюме">
+      <div style="display:flex; gap:8px; align-items:center; margin-bottom:6px;">
+        <div>
+          <h2>Превью</h2>
+          <div style="font-size:.75rem; color: var(--muted);">Обновляется автоматически</div>
+        </div>
+        <div style="margin-left:auto;">
+          <div class="pill">Шаблон: <span id="current-template">Классический</span></div>
+        </div>
+      </div>
+      <div class="preview-wrapper" id="preview-container" aria-live="polite">
+        <!-- Рендер резюме сюда -->
+        <div id="resume-render" class="resume">
+          <!-- наполнение через JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ==================== UTILS ====================
+    function uuid() {
+      return crypto.randomUUID?.() || Math.random().toString(36).substring(2,9);
+    }
+    function showNotification(msg, duration = 2000) {
+      const n = document.getElementById('notif');
+      n.textContent = msg;
+      n.classList.add('show');
+      setTimeout(()=> n.classList.remove('show'), duration);
+    }
+    function getData() {
+      const d = localStorage.getItem('resume_builder_data');
+      if (!d) return defaultData();
+      try { return JSON.parse(d); } catch { return defaultData(); }
+    }
+    function saveData(data) {
+      localStorage.setItem('resume_builder_data', JSON.stringify(data));
+    }
+    function defaultData() {
+      return {
+        profile: {
+          fullName: '',
+          title: '',
+          email: '',
+          phone: ''
+        },
+        summary: '',
+        experience: [],
+        education: [],
+        skills: [],
+        projects: [],
+        template: 'default'
+      };
+    }
+
+    // ==================== Telegram WebApp init ====================
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+      document.getElementById('telegram-ready').textContent = 'Telegram ✔';
+      document.getElementById('telegram-ready').addEventListener('click', () => {
+        // Пример: отправить данные в бота
+        const data = getData();
+        window.Telegram.WebApp.sendData(JSON.stringify({ resume: data }));
+        showNotification('Данные отправлены через Telegram WebApp'); // нужно обработать на бэке бота
+      });
+    }
+
+    // ==================== STATE ====================
+    let state = getData();
+
+    // Элементы
+    const fullNameEl = document.getElementById('fullName');
+    const titleEl = document.getElementById('title');
+    const emailEl = document.getElementById('email');
+    const phoneEl = document.getElementById('phone');
+    const summaryEl = document.getElementById('summary');
+    const experienceListEl = document.getElementById('experience-list');
+    const educationListEl = document.getElementById('education-list');
+    const skillsListEl = document.getElementById('skills-list');
+    const projectsListEl = document.getElementById('projects-list');
+    const resumeRenderEl = document.getElementById('resume-render');
+    const currentTemplateLabel = document.getElementById('current-template');
+
+    // ==================== INIT ====================
+    function init() {
+      loadIntoForm();
+      renderDynamicSections();
+      renderPreview();
+      setupEventListeners();
+      updateStepper();
+      applyTemplateVisual();
+    }
+
+    function loadIntoForm() {
+      fullNameEl.value = state.profile.fullName;
+      titleEl.value = state.profile.title;
+      emailEl.value = state.profile.email;
+      phoneEl.value = state.profile.phone;
+      summaryEl.value = state.summary;
+      currentTemplateLabel.textContent = templateName(state.template);
+    }
+
+    function setupEventListeners() {
+      // Профиль
+      [fullNameEl, titleEl, emailEl, phoneEl].forEach(el => {
+        el.addEventListener('input', () => {
+          state.profile.fullName = fullNameEl.value;
+          state.profile.title = titleEl.value;
+          state.profile.email = emailEl.value;
+          state.profile.phone = phoneEl.value;
+          persist();
+          renderPreview();
+        });
+      });
+      summaryEl.addEventListener('input', () => {
+        state.summary = summaryEl.value;
+        persist();
+        renderPreview();
+      });
+
+      // Добавить опыт
+      document.getElementById('add-experience').addEventListener('click', () => {
+        state.experience.push({
+          id: uuid(),
+          company: '',
+          position: '',
+          start: '',
+          end: '',
+          description: ''
+        });
+        persist();
+        renderDynamicSections();
+        renderPreview();
+        showNotification('Добавлен новый опыт');
+      });
+
+      // Добавить образование
+      document.getElementById('add-education').addEventListener('click', () => {
+        state.education.push({
+          id: uuid(),
+          school: '',
+          degree: '',
+          start: '',
+          end: '',
+          extra: ''
+        });
+        persist();
+        renderDynamicSections();
+        renderPreview();
+        showNotification('Добавлено образование');
+      });
+
+      // Навыки
+      document.getElementById('add-skill').addEventListener('click', () => {
+        const input = document.getElementById('new-skill');
+        const val = input.value.trim();
+        if (val) {
+          if (!state.skills.includes(val)) {
+            state.skills.push(val);
+            persist();
+            renderDynamicSections();
+            renderPreview();
+            showNotification('Навык добавлен');
+          } else showNotification('Такой навык уже есть');
+          input.value = '';
+        }
+      });
+
+      // Добавить проект
+      document.getElementById('add-project').addEventListener('click', () => {
+        state.projects.push({
+          id: uuid(),
+          name: '',
+          description: '',
+          link: ''
+        });
+        persist();
+        renderDynamicSections();
+        renderPreview();
+        showNotification('Добавлен проект');
+      });
+
+      // Сохранить / Загрузить / Сброс
+      document.getElementById('save-btn').addEventListener('click', () => {
+        persist();
+        showNotification('Сохранено');
+      });
+      document.getElementById('load-btn').addEventListener('click', () => {
+        state = getData();
+        loadIntoForm();
+        renderDynamicSections();
+        renderPreview();
+        showNotification('Загружено');
+      });
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        if (confirm('Очистить все данные?')) {
+          state = defaultData();
+          persist();
+          loadIntoForm();
+          renderDynamicSections();
+          renderPreview();
+          showNotification('Сброшено');
+        }
+      });
+
+      // Превью и PDF
+      document.getElementById('preview-btn').addEventListener('click', () => {
+        renderPreview(true);
+      });
+      document.getElementById('export-pdf-btn').addEventListener('click', exportPDF);
+
+      // Шаблоны
+      document.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const t = card.getAttribute('data-template');
+          state.template = t;
+          persist();
+          applyTemplateVisual();
+          renderPreview();
+          currentTemplateLabel.textContent = templateName(t);
+          showNotification('Шаблон изменён');
+        });
+      });
+    }
+
+    function templateName(key) {
+      return key === 'modern' ? 'Современный' : 'Классический';
+    }
+
+    function applyTemplateVisual() {
+      document.querySelectorAll('.template-card').forEach(c => {
+        c.classList.toggle('selected', c.getAttribute('data-template') === state.template);
+      });
+    }
+
+    function persist() {
+      saveData(state);
+    }
+
+    // ==================== Рендер динамических секций ====================
+    function renderDynamicSections() {
+      // Опыт
+      experienceListEl.innerHTML = '';
+      state.experience.forEach(exp => {
+        const el = document.createElement('div');
+        el.className = 'section-wrapper';
+        el.dataset.id = exp.id;
+        el.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="section-title"><div class="line"></div><div>Опыт</div></div>
+            <div style="display:flex; gap:6px;">
+              <button class="small-btn remove-exp" title="Удалить">Удалить</button>
+            </div>
+          </div>
+          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:150px;">
+              <small>Компания</small>
+              <input class="input exp-company" value="${escapeHtml(exp.company)}" placeholder="Acme Corp" />
+            </div>
+            <div style="flex:1; min-width:150px;">
+              <small>Должность</small>
+              <input class="input exp-position" value="${escapeHtml(exp.position)}" placeholder="Frontend dev" />
+            </div>
+          </div>
+          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:120px;">
+              <small>С</small>
+              <input class="input exp-start" type="month" value="${exp.start}" />
+            </div>
+            <div style="flex:1; min-width:120px;">
+              <small>По</small>
+              <input class="input exp-end" type="month" value="${exp.end}" />
+            </div>
+          </div>
+          <div>
+            <small>Описание</small>
+            <textarea class="input exp-desc" rows="2" placeholder="Что делал...">${escapeHtml(exp.description)}</textarea>
+          </div>
+        `;
+        experienceListEl.appendChild(el);
+
+        // слушатели
+        el.querySelector('.exp-company').addEventListener('input', e => {
+          exp.company = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.exp-position').addEventListener('input', e => {
+          exp.position = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.exp-start').addEventListener('input', e => {
+          exp.start = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.exp-end').addEventListener('input', e => {
+          exp.end = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.exp-desc').addEventListener('input', e => {
+          exp.description = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.remove-exp').addEventListener('click', () => {
+          state.experience = state.experience.filter(x => x.id !== exp.id);
+          persist();
+          renderDynamicSections();
+          renderPreview();
+          showNotification('Опыт удалён');
+        });
+      });
+
+      // Образование
+      educationListEl.innerHTML = '';
+      state.education.forEach(ed => {
+        const el = document.createElement('div');
+        el.className = 'section-wrapper';
+        el.dataset.id = ed.id;
+        el.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="section-title"><div class="line"></div><div>Образование</div></div>
+            <div style="display:flex; gap:6px;">
+              <button class="small-btn remove-edu" title="Удалить">Удалить</button>
+            </div>
+          </div>
+          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:150px;">
+              <small>Учебное заведение</small>
+              <input class="input edu-school" value="${escapeHtml(ed.school)}" placeholder="Университет" />
+            </div>
+            <div style="flex:1; min-width:150px;">
+              <small>Степень / Специальность</small>
+              <input class="input edu-degree" value="${escapeHtml(ed.degree)}" placeholder="Бакалавр, CS" />
+            </div>
+          </div>
+          <div class="flex" style="gap:10px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:120px;">
+              <small>С</small>
+              <input class="input edu-start" type="month" value="${ed.start}" />
+            </div>
+            <div style="flex:1; min-width:120px;">
+              <small>По</small>
+              <input class="input edu-end" type="month" value="${ed.end}" />
+            </div>
+          </div>
+          <div>
+            <small>Дополнительно</small>
+            <input class="input edu-extra" value="${escapeHtml(ed.extra)}" placeholder="Стипендия, GPA и т.п." />
+          </div>
+        `;
+        educationListEl.appendChild(el);
+
+        // слушатели
+        el.querySelector('.edu-school').addEventListener('input', e => {
+          ed.school = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.edu-degree').addEventListener('input', e => {
+          ed.degree = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.edu-start').addEventListener('input', e => {
+          ed.start = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.edu-end').addEventListener('input', e => {
+          ed.end = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.edu-extra').addEventListener('input', e => {
+          ed.extra = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.remove-edu').addEventListener('click', () => {
+          state.education = state.education.filter(x => x.id !== ed.id);
+          persist();
+          renderDynamicSections();
+          renderPreview();
+          showNotification('Образование удалено');
+        });
+      });
+
+      // Навыки
+      skillsListEl.innerHTML = '';
+      state.skills.forEach(s => {
+        const badge = document.createElement('div');
+        badge.className = 'skill-badge';
+        badge.textContent = s;
+        const rem = document.createElement('span');
+        rem.style.marginLeft='6px';
+        rem.style.cursor='pointer';
+        rem.textContent='×';
+        rem.title='Удалить';
+        rem.addEventListener('click', () => {
+          state.skills = state.skills.filter(x => x !== s);
+          persist();
+          renderDynamicSections();
+          renderPreview();
+          showNotification('Навык удалён');
+        });
+        badge.appendChild(rem);
+        skillsListEl.appendChild(badge);
+      });
+
+      // Проекты
+      projectsListEl.innerHTML = '';
+      state.projects.forEach(p => {
+        const el = document.createElement('div');
+        el.className = 'section-wrapper';
+        el.dataset.id = p.id;
+        el.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="section-title"><div class="line"></div><div>Проект</div></div>
+            <div style="display:flex; gap:6px;">
+              <button class="small-btn remove-proj" title="Удалить">Удалить</button>
+            </div>
+          </div>
+          <div>
+            <small>Название</small>
+            <input class="input proj-name" value="${escapeHtml(p.name)}" placeholder="My Cool App" />
+          </div>
+          <div>
+            <small>Описание</small>
+            <textarea class="input proj-desc" rows="2" placeholder="Что делает, стек">${escapeHtml(p.description)}</textarea>
+          </div>
+          <div>
+            <small>Ссылка</small>
+            <input class="input proj-link" value="${escapeHtml(p.link)}" placeholder="https://..." />
+          </div>
+        `;
+        projectsListEl.appendChild(el);
+
+        el.querySelector('.proj-name').addEventListener('input', e => {
+          p.name = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.proj-desc').addEventListener('input', e => {
+          p.description = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.proj-link').addEventListener('input', e => {
+          p.link = e.target.value;
+          persist();
+          renderPreview();
+        });
+        el.querySelector('.remove-proj').addEventListener('click', () => {
+          state.projects = state.projects.filter(x => x.id !== p.id);
+          persist();
+          renderDynamicSections();
+          renderPreview();
+          showNotification('Проект удалён');
+        });
+      });
+    }
+
+    // Простая экранизация для вставки в value / textContent
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, function(m){ return ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+      })[m]; });
+    }
+
+    // ==================== Превью ====================
+    function renderPreview(openBlank=false) {
+      // Собираем HTML
+      const tpl = buildResumeHTML(state);
+      resumeRenderEl.innerHTML = tpl;
+
+      // Подсветка активного шаблона визуально
+      if (openBlank) {
+        const w = window.open('');
+        w.document.write(`
+          <html>
+            <head>
+              <meta charset="UTF-8" />
+              <title>Резюме — превью</title>
+              <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+              <style>
+                body{margin:0;background:#f2f4f9;font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;padding:30px;}
+                .resume{max-width:800px;margin:auto;background:#fff;border-radius:10px;box-shadow:0 40px 100px -20px rgba(0,0,0,.1);padding:30px;color:#1e2432;}
+                .resume-header{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+                .name-block h1{margin:0;font-size:1.9rem;line-height:1.1;}
+                .title{margin-top:4px;font-weight:600;color:#555;}
+                .contact{text-align:right;font-size:.75rem;line-height:1.3;flex:1;}
+                .section-title{margin-top:24px;font-weight:700;display:flex;align-items:center;gap:8px;font-size:1rem;margin-bottom:6px;}
+                .line{height:3px;width:50px;background:#6366f1;border-radius:2px;}
+                .item{margin-bottom:12px;}
+                .muted{color:#777;}
+                .skill-badge{display:inline-block;background:#eef2f7;color:#444;padding:6px 12px;border-radius:999px;font-size:.65rem;margin:2px 4px 4px 0;}
+                a{color:#6366f1;text-decoration:none;}
+              </style>
+            </head>
+            <body>${tpl}</body>
+          </html>
+        `);
+        w.document.close();
+      }
+    }
+
+    function buildResumeHTML(data) {
+      // Helper для дат
+      function formatPeriod(start, end) {
+        if (!start && !end) return '';
+        const opts = { year: 'numeric', month: 'short' };
+        try {
+          const s = start ? new Date(start + '-01').toLocaleDateString('ru-RU', opts) : '';
+          const e = end ? new Date(end + '-01').toLocaleDateString('ru-RU', opts) : 'настоящее время';
+          return `${s} — ${e}`;
+        } catch { return `${start || ''} — ${end || ''}`; }
+      }
+
+      // Собираем куски
+      let experienceHTML = '';
+      data.experience.forEach(exp => {
+        if (!exp.company && !exp.position) return;
+        experienceHTML += `
+          <div class="item">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+              <div>
+                <div style="font-weight:600;">${escapeHtml(exp.position || '')} ${exp.position ? 'в' : ''} ${escapeHtml(exp.company || '')}</div>
+                <div class="muted" style="font-size:.75rem;">${formatPeriod(exp.start, exp.end)}</div>
+              </div>
+            </div>
+            <div style="margin-top:4px;">${escapeHtml(exp.description || '')}</div>
+          </div>
+        `;
+      });
+
+      let educationHTML = '';
+      data.education.forEach(ed => {
+        if (!ed.school) return;
+        educationHTML += `
+          <div class="item">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+              <div>
+                <div style="font-weight:600;">${escapeHtml(ed.degree || '')} — ${escapeHtml(ed.school || '')}</div>
+                <div class="muted" style="font-size:.75rem;">${formatPeriod(ed.start, ed.end)}</div>
+              </div>
+            </div>
+            ${ed.extra ? `<div style="margin-top:4px;">${escapeHtml(ed.extra)}</div>` : ''}
+          </div>
+        `;
+      });
+
+      let skillsHTML = '';
+      data.skills.forEach(s => {
+        skillsHTML += `<div class="skill-badge">${escapeHtml(s)}</div>`;
+      });
+
+      let projectsHTML = '';
+      data.projects.forEach(p => {
+        if (!p.name) return;
+        projectsHTML += `
+          <div class="item">
+            <div style="font-weight:600;">${escapeHtml(p.name)}</div>
+            <div style="margin-top:4px;">${escapeHtml(p.description)}</div>
+            ${p.link ? `<div style="margin-top:4px;"><a href="${escapeHtml(p.link)}" target="_blank">${escapeHtml(p.link)}</a></div>` : ''}
+          </div>
+        `;
+      });
+
+      return `
+      <div class="resume">
+        <div class="resume-header">
+          <div class="name-block">
+            <h1>${escapeHtml(data.profile.fullName || 'Ваше имя')}</h1>
+            <div class="title">${escapeHtml(data.profile.title || '')}</div>
+          </div>
+          <div class="contact">
+            <div>${escapeHtml(data.profile.email || '')}</div>
+            <div>${escapeHtml(data.profile.phone || '')}</div>
+          </div>
+        </div>
+
+        ${data.summary ? `
+          <div style="margin-top:18px;">
+            <div class="section-title">
+              <div class="line"></div><div>О себе</div>
+            </div>
+            <div class="item">${escapeHtml(data.summary)}</div>
+          </div>` : ''}
+
+        ${experienceHTML ? `
+          <div>
+            <div class="section-title">
+              <div class="line"></div><div>Опыт работы</div>
+            </div>
+            ${experienceHTML}
+          </div>` : ''}
+
+        ${educationHTML ? `
+          <div>
+            <div class="section-title">
+              <div class="line"></div><div>Образование</div>
+            </div>
+            ${educationHTML}
+          </div>` : ''}
+
+        ${skillsHTML ? `
+          <div>
+            <div class="section-title">
+              <div class="line"></div><div>Навыки</div>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              ${skillsHTML}
+            </div>
+          </div>` : ''}
+
+        ${projectsHTML ? `
+          <div>
+            <div class="section-title">
+              <div class="line"></div><div>Проекты</div>
+            </div>
+            ${projectsHTML}
+          </div>` : ''}
+      </div>
+      `;
+    }
+
+    // ==================== Экспорт в PDF ====================
+    async function exportPDF() {
+      // Используем html2canvas-like рендер: упрощённо берём текстовую версию
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const margin = 40;
+      let y = 40;
+
+      // Заголовок
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      doc.text(state.profile.fullName || '', margin, y);
+      y += 28;
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(state.profile.title || '', margin, y);
+      y += 18;
+      doc.text(`${state.profile.email || ''} | ${state.profile.phone || ''}`, margin, y);
+      y += 28;
+
+      if (state.summary) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('О себе', margin, y);
+        y += 18;
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        const split = doc.splitTextToSize(state.summary, 500);
+        doc.text(split, margin, y);
+        y += split.length * 14 + 10;
+      }
+
+      function safePeriod(start, end) {
+        if (!start && !end) return '';
+        const opts = { year: 'numeric', month: 'short' };
+        try {
+          const s = start ? new Date(start + '-01').toLocaleDateString('ru-RU', opts) : '';
+          const e = end ? new Date(end + '-01').toLocaleDateString('ru-RU', opts) : 'настоящее время';
+          return `${s} — ${e}`;
+        } catch { return `${start || ''} — ${end || ''}`; }
+      }
+
+      if (state.experience.length) {
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Опыт работы', margin, y);
+        y += 18;
+        state.experience.forEach(exp => {
+          if (y > 750) {
+            doc.addPage();
+            y = 40;
+          }
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          const titleLine = `${exp.position || ''}${exp.position && exp.company ? ' в ' : ''}${exp.company || ''}`;
+          doc.text(titleLine, margin, y);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.text(safePeriod(exp.start, exp.end), margin, y + 14);
+          if (exp.description) {
+            const splitDesc = doc.splitTextToSize(exp.description, 500);
+            doc.text(splitDesc, margin, y + 30);
+            y += 30 + splitDesc.length * 12;
+          } else {
+            y += 40;
+          }
+          y += 6;
+        });
+      }
+
+      if (state.education.length) {
+        if (y > 700) { doc.addPage(); y = 40; }
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Образование', margin, y);
+        y += 18;
+        state.education.forEach(ed => {
+          if (y > 750) {
+            doc.addPage(); y = 40;
+          }
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          const main = `${ed.degree || ''} — ${ed.school || ''}`;
+          doc.text(main, margin, y);
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.text(safePeriod(ed.start, ed.end), margin, y + 14);
+          if (ed.extra) {
+            doc.text(ed.extra, margin, y + 30);
+            y += 30;
+          }
+          y += 30;
+        });
+      }
+
+      if (state.skills.length) {
+        if (y > 700) { doc.addPage(); y = 40; }
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Навыки', margin, y);
+        y += 18;
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(state.skills.join(', '), margin, y);
+        y += 30;
+      }
+
+      if (state.projects.length) {
+        if (y > 700) { doc.addPage(); y = 40; }
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Проекты', margin, y);
+        y += 18;
+        state.projects.forEach(p => {
+          if (y > 750) { doc.addPage(); y = 40; }
+          doc.setFontSize(12);
+          doc.setFont('helvetica', 'bold');
+          doc.text(p.name || '', margin, y);
+          y += 14;
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          if (p.description) {
+            const split = doc.splitTextToSize(p.description, 500);
+            doc.text(split, margin, y);
+            y += split.length * 12;
+          }
+          if (p.link) {
+            doc.text(p.link, margin, y);
+            y += 14;
+          }
+          y += 10;
+        });
+      }
+
+      doc.save(`${(state.profile.fullName || 'resume').replace(/\s+/g,'_')}.pdf`);
+    }
+
+    // ==================== Степпер (визуализация прогресса) ====================
+    function updateStepper() {
+      const total = 5;
+      let filled = 0;
+      if (state.profile.fullName || state.profile.title || state.profile.email || state.profile.phone) filled++;
+      if (state.summary) filled++;
+      if (state.experience.length) filled++;
+      if (state.education.length || state.skills.length) filled++;
+      if (state.projects.length) filled++;
+      document.querySelectorAll('.step-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i < filled);
+      });
+    }
+
+    // Автообновления
+    setInterval(() => {
+      updateStepper();
+    }, 800);
+
+    // Запуск
+    init();
+  </script>
+</body>
+</html>
